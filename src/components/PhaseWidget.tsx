@@ -1,14 +1,41 @@
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import type { CircadianPhase } from "@/services/circadian";
-import { getPhaseProgress, getTimeUntilHour, formatTimeRemaining } from "@/utils/time";
+import { getPhaseProgress, getTimeUntilHour, formatTimeRemaining, formatTime } from "@/utils/time";
 import { Separator } from "@/components/ui/separator";
+import { TimerDisplay } from "./TimerDisplay";
+import { ArrowUp, ArrowRight, ArrowDown, Circle, Sun, Sunrise, Sunset, Moon } from 'lucide-react';
 
 interface PhaseWidgetProps {
   currentPhase: CircadianPhase;
   nextPhase?: CircadianPhase;
 }
+
+const getPhaseIcon = (phaseName: string) => {
+  const icons: Record<string, JSX.Element> = {
+    "Morning Peak": <Sunrise className="w-5 h-5" />,
+    "Mid-Day Trough": <Sun className="w-5 h-5" />,
+    "Afternoon Peak": <Sun className="w-5 h-5" />,
+    "Evening Dip": <Sunset className="w-5 h-5" />,
+    "Sleep Zone": <Moon className="w-5 h-5" />,
+    "Night": <Moon className="w-5 h-5" />
+  };
+  return icons[phaseName] || <Circle className="w-5 h-5" />;
+};
+
+const getPhaseDirection = (phaseName: string) => {
+  const directions: Record<string, JSX.Element> = {
+    "Morning Peak": <ArrowUp className="w-4 h-4" />,
+    "Mid-Day Trough": <ArrowRight className="w-4 h-4" />,
+    "Afternoon Peak": <ArrowRight className="w-4 h-4" />,
+    "Evening Dip": <ArrowDown className="w-4 h-4" />,
+    "Sleep Zone": <ArrowDown className="w-4 h-4" />,
+    "Night": <Circle className="w-4 h-4" />
+  };
+  return directions[phaseName] || <Circle className="w-4 h-4" />;
+};
 
 const getPhaseColor = (phaseName: string): string => {
   const colors: Record<string, string> = {
@@ -30,8 +57,12 @@ export const PhaseWidget = ({ currentPhase, nextPhase }: PhaseWidgetProps) => {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader data-slot="card-header" className="pb-0">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-lg font-semibold">Current Phase</CardTitle>
-          <Badge className={`${getPhaseColor(currentPhase.name)} font-medium px-3 py-1`}>
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-lg font-semibold">Current Phase</CardTitle>
+            {getPhaseIcon(currentPhase.name)}
+          </div>
+          <Badge className={`${getPhaseColor(currentPhase.name)} font-medium px-3 py-1 flex items-center gap-2`}>
+            {getPhaseDirection(currentPhase.name)}
             {currentPhase.name}
           </Badge>
         </div>
@@ -52,17 +83,18 @@ export const PhaseWidget = ({ currentPhase, nextPhase }: PhaseWidgetProps) => {
           <Progress value={progress} className="h-2" />
         </div>
 
-        {/* Time remaining */}
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Time remaining</span>
-          <span className="font-medium">{formatTimeRemaining(timeRemaining)}</span>
-        </div>
+        {/* Timer Display */}
+        <TimerDisplay 
+          timeLeft={formatTimeRemaining(timeRemaining)}
+          endTime={formatTime(currentPhase.end)}
+        />
 
         {/* Next phase */}
         {nextPhase && (
           <div className="flex justify-between items-center text-sm pt-1">
             <span className="text-muted-foreground">Next phase</span>
-            <Badge variant="outline" className={`${getPhaseColor(nextPhase.name)} font-medium px-3 py-1`}>
+            <Badge variant="outline" className={`${getPhaseColor(nextPhase.name)} font-medium px-3 py-1 flex items-center gap-2`}>
+              {getPhaseDirection(nextPhase.name)}
               {nextPhase.name}
             </Badge>
           </div>

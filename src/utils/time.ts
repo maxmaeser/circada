@@ -1,53 +1,48 @@
-export const getTimeUntilHour = (targetHour: number, currentDate: Date = new Date()): number => {
-  const now = new Date(currentDate);
-  const target = new Date(currentDate);
-  target.setHours(targetHour, 0, 0, 0);
-  
-  // If target hour is earlier in the day, it means next day
-  if (target <= now) {
-    target.setDate(target.getDate() + 1);
-  }
-  
-  return target.getTime() - now.getTime();
-};
+export function getPhaseProgress(startHour: number, endHour: number): number {
+  const now = new Date();
+  const currentHour = now.getHours() + now.getMinutes() / 60;
 
-export const formatTimeRemaining = (milliseconds: number): string => {
-  const hours = Math.floor(milliseconds / (1000 * 60 * 60));
-  const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
-  
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  }
-  return `${minutes}m`;
-};
-
-export const formatTime = (date: Date): string => {
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  });
-};
-
-export const getPhaseProgress = (phaseStart: number, phaseEnd: number, currentDate: Date = new Date()): number => {
-  const currentHour = currentDate.getHours() + currentDate.getMinutes() / 60;
-  
   // Handle phases that cross midnight
-  let start = phaseStart;
-  let end = phaseEnd;
-  let current = currentHour;
-  
-  if (phaseEnd < phaseStart) {
-    // Phase crosses midnight
-    if (currentHour >= phaseStart) {
-      end = phaseEnd + 24;
+  if (endHour < startHour) {
+    if (currentHour >= startHour) {
+      return ((currentHour - startHour) / (24 - startHour + endHour)) * 100;
     } else {
-      start = phaseStart - 24;
+      return ((currentHour + 24 - startHour) / (24 - startHour + endHour)) * 100;
     }
   }
+
+  return ((currentHour - startHour) / (endHour - startHour)) * 100;
+}
+
+export function getTimeUntilHour(targetHour: number): number {
+  const now = new Date();
+  const currentHour = now.getHours() + now.getMinutes() / 60;
   
-  const totalDuration = end - start;
-  const elapsed = current - start;
+  let hoursUntil = targetHour - currentHour;
+  if (hoursUntil < 0) {
+    hoursUntil += 24;
+  }
   
-  return Math.max(0, Math.min(100, (elapsed / totalDuration) * 100));
-}; 
+  return hoursUntil;
+}
+
+export function formatTimeRemaining(hours: number): string {
+  const wholeHours = Math.floor(hours);
+  const minutes = Math.round((hours - wholeHours) * 60);
+  
+  if (wholeHours === 0) {
+    return `${minutes}m`;
+  }
+  
+  return `${wholeHours}h ${minutes}m`;
+}
+
+export function formatTime(hour: number): string {
+  const now = new Date();
+  const date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor(hour), Math.round((hour % 1) * 60));
+  return date.toLocaleTimeString('en-US', { 
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true 
+  });
+} 
