@@ -1,4 +1,4 @@
-import type { JSX } from 'react';
+import React from 'react';
 import { ArrowUp, ArrowRight, ArrowDown, Circle } from 'lucide-react';
 import type { CircadianPhase } from '@/services/circadian';
 import { formatTimeRemaining, getTimeUntilHour } from '@/utils/time';

@@ -10,7 +10,19 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        menubar: path.resolve(__dirname, 'menubar.html'),
+      },
+    },
+  },
+  server: {
+    port: 1420,
+    strictPort: true,
+  },
   css: {
-    postcss: './postcss.config.js'
+    postcss: './postcss.config.cjs'
   }
 })
