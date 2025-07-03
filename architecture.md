@@ -1,164 +1,59 @@
-Circadian Rhythm ADHD App — Architecture (architecture.md)
-1. File & Folder Structure
-text
-Copy code
-/circadian-app
+# Circadian Rhythm App — Architecture
+
+## 1. High-Level Overview
+
+The application is a native desktop app for macOS built with Tauri and React. It displays the user's current circadian rhythm phase in a clean, visual interface.
+
+*   **Frontend**: React with TypeScript, built using Vite. The entire UI is managed within a single primary component (`src/App.tsx`).
+*   **Styling**: [shadcn/ui](https://ui.shadcn.com/) and [Tailwind CSS](https://tailwindcss.com/) for a modern, utility-first approach.
+*   **Backend & Packaging**: [Tauri](https://tauri.app/) wraps the web frontend into a lightweight, secure, and native macOS application. All application logic is currently client-side.
+
+## 2. File & Folder Structure
+
+The project has been streamlined to a minimal structure.
+
+```
+/
 │
 ├── src/
-│   ├── components/          # UI components (PhaseWidget, TimerDisplay, etc.)
-│   ├── services/            # Data fetching, circadian phase logic, integrations
-│   ├── hooks/               # React hooks for state, timers, phase calculation
-│   ├── utils/               # Utilities (date/time, phase calculations)
-│   ├── App.tsx              # App entry (React)
-│   ├── main.ts              # Tauri main process
-│   └── index.html           # Base HTML
+│   ├── components/
+│   │   └── ui/              # shadcn/ui components (Card, etc.)
+│   ├── App.tsx              # Main (and only) React component, contains all UI and logic
+│   └── main.tsx             # React root renderer
 │
-├── public/                  # Static files, icons, assets
-├── tauri.conf.json          # Tauri config
-├── package.json             # Node dependencies
-├── README.md
+├── src-tauri/
+│   ├── icons/               # Application icons
+│   ├── Cargo.toml           # Rust dependencies
+│   ├── tauri.conf.json      # Tauri configuration (windows, build, etc.)
+│   └── src/
+│       └── main.rs          # Tauri Rust entry point
+│
+├── package.json             # Node.js dependencies
 └── architecture.md          # This file
-2. High-Level Overview
-Frontend:
+```
 
-React (can use Next.js in SPA mode, but Tauri+CRA/Vite is simplest for desktop).
+## 3. State & Data Flow
 
-Main UI: shows current circadian phase, phase name, time left in phase, and the next phase.
+The application's state management is self-contained within the `App.tsx` component using standard React hooks.
 
-Minimal, distraction-free design, widget/menubar optimized.
-
-Backend:
-
-Supabase planned for cloud sync/user auth, but not required for MVP.
-
-All circadian logic and state is client-side for now.
-
-Health data: Placeholder/mock service; future: bridge native Apple Health data via Tauri plugin or Swift bridge.
-
-App Packaging:
-
-Tauri manages the menubar app (small binary, secure).
-
-For MacOS: tauri-plugin-positioner or similar to place in menubar.
-
-3. Folder/Files — Roles
-Path	Purpose / Contents
-src/components/	UI widgets: PhaseWidget.tsx, TimerDisplay.tsx, MenuBar.tsx
-src/services/	Circadian logic: circadian.ts, future: healthkit.ts
-src/hooks/	Custom hooks: useCircadianPhase.ts, useTimer.ts
-src/utils/	Helper functions, e.g. time math
-src/App.tsx	Main app, wires up state, context
-src/main.ts	Tauri backend entry point, system APIs, bridge to healthkit later
-public/	Icons, static assets
-tauri.conf.json	App config, menubar/permissions
-package.json	Dependencies
-
-4. Where State Lives & How Services Connect
-Circadian State:
-
-Global app state using React Context or Redux (very light).
-
-State includes:
-
-Current phase ({ name, startTime, endTime, timeLeft })
-
-All phases for the day (Array)
-
-Timer status
-
-(Future) Health data
-
-Services:
-
-circadian.ts — logic for calculating which phase based on clock time, phase config (ADHD defaults, user override).
-
-(Future) healthkit.ts — native bridge, pulls in sleep/activity data for phase adjustment.
-
-(Future) Supabase — for user prefs, multi-device sync.
-
-UI ↔ State:
-
-Main App pulls circadian state from hook/context.
-
-Components (PhaseWidget, TimerDisplay) consume this state and re-render live.
-
-Menubar UI displays phase, icon, timer.
-
-5. Sample Folder Breakdown
-text
-Copy code
-src/
-├── components/
-│   ├── PhaseWidget.tsx          # Shows phase name, color, time left
-│   ├── TimerDisplay.tsx         # Shows countdown + clock time
-│   └── MenuBar.tsx              # Handles menubar integration
-│
-├── services/
-│   ├── circadian.ts             # All logic for phase timing (input: time, output: phase)
-│   └── healthkit.ts             # (stub for now)
-│
-├── hooks/
-│   ├── useCircadianPhase.ts     # Returns current phase, time left
-│   └── useTimer.ts              # Handles interval updates
-│
-├── utils/
-│   └── time.ts                  # Time math, conversions
-│
-├── App.tsx                      # Main app wiring
-├── main.ts                      # Tauri main process (tray/menubar setup)
-└── index.html
-6. State & Data Flow
-mermaid
-Copy code
+```mermaid
 flowchart TD
-    A[System Time / Health Data] --> B{Circadian Phase Logic}
-    B --> C[React App State]
-    C --> D[PhaseWidget]
-    C --> E[TimerDisplay]
-    D & E --> F[Menubar UI]
-System time is polled to determine the phase.
+    A[System Time] --> B{React State in App.tsx};
+    B --> C[UI Rendering];
+    C --> D[Desktop View];
+```
 
-Circadian phase logic returns current phase, time left, next phase.
+1.  **System Time**: The `useEffect` hook in `App.tsx` polls the system's current time every second.
+2.  **State Update**: The component's state (`useState`) is updated, triggering a re-render.
+3.  **UI Rendering**: The main component re-renders to show the current time, the corresponding circadian phase, and the visual timeline.
 
-State is updated via React hooks/context.
+This simple, centralized approach is sufficient for the MVP and keeps the logic easy to follow.
 
-UI auto-updates in menubar.
+## 4. Next Steps & Future Enhancements
 
-7. Basic Setup Commands
-sh
-Copy code
-# 1. Init project folder
-mkdir circadian-app && cd circadian-app
+With the UI and core structure in place, focus can shift to enhancing functionality and user experience.
 
-# 2. Init Tauri + React (Vite is lightest)
-npm create vite@latest . -- --template react-ts
-npm install
-npm install --save @tauri-apps/api
-
-# 3. Add Tauri
-npm create tauri-app@latest
-
-# 4. Add folders
-mkdir -p src/components src/services src/hooks src/utils public
-
-# 5. Run the app (MacOS)
-npm run tauri dev
-8. Planning for Apple Health Data Integration
-Tauri can use native plugins, but you’ll need a Swift/Objective-C bridge for HealthKit.
-
-For now: mock health data in healthkit.ts (with stubbed async API).
-
-Later:
-
-Build a Swift macOS service, expose a local API or Tauri plugin.
-
-Fetch health data and feed into circadian logic.
-
-9. Why This Stack?
-Tauri + React: Lightweight, native-feel, fast, works on MacOS/iOS/Windows later.
-
-React state: Easy to maintain, test, and evolve as you add features.
-
-Supabase: Optional—future for user cloud sync.
-
-Easy to open source, easy to extend to widgets, menubar, or companion mobile apps.
+*   **[TODO] Refactor Logic**: Extract the circadian phase calculation logic from `App.tsx` into a dedicated utility file (e.g., `src/lib/circadian.ts`) to separate concerns and improve testability.
+*   **[TODO] Menubar Mode**: Implement a menubar-only display. This will require creating a separate, smaller window in `tauri.conf.json` and a dedicated component to render a minimal view of the current phase.
+*   **[TODO] User Preferences**: Allow users to customize their wake-up/sleep times to adjust the phase calculations accordingly. This will require adding a settings UI and persisting the configuration locally.
+*   **[TODO] Native Integrations**: Explore Tauri plugins or native Swift code to integrate with Apple HealthKit for automatic sleep data, making phase calculations more accurate.
