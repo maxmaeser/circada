@@ -1,4 +1,4 @@
-import { CircadianInputData, TimeSeries, EpochMs } from "./types";
+import type { CircadianInputData, TimeSeries, EpochMs } from "./types";
 
 /**
  * Abstract interface any data source must implement (HealthKit, WebSocket, etc.).

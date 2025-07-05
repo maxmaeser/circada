@@ -1,5 +1,5 @@
 import { percentile, mean, standardDeviation } from "./math";
-import { TimeSeries } from "./types";
+import type { TimeSeries } from "./types";
 
 // ------------------ TYPES ------------------
 export interface AwakeningResult {

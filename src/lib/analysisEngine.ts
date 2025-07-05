@@ -1,7 +1,7 @@
 import { DataProvider } from "./dataProvider";
 import { detectAwakeningPattern } from "./phaseDetection";
 import { calcIntradailyVariability, calcSleepEfficiency } from "./tauriBridge";
-import { DerivedMetric, CircadianAnalysis } from "./types";
+import type { DerivedMetric, CircadianAnalysis } from "./types";
 import { ADHD_THRESHOLDS } from "./constants";
 
 /**
