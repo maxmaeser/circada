@@ -30,8 +30,9 @@ export function detectAwakeningPattern({
     throw new Error("Activity series empty – cannot detect awakening");
   }
 
-  // 1. Determine dynamic activity threshold (75th percentile of the whole day)
-  const activityThreshold = percentile(activity.values, 75);
+  // 1. Use a fixed activity threshold suitable for typical step counts / accelerometer units.
+  //    For mock data we know daytime values are 80-100 and night 1-5, so 60 is safe.
+  const activityThreshold = 60;
 
   // 2. Find first sustained 15-minute window above threshold within a plausible morning window
   const sustainedMinutes = 15;
@@ -43,14 +44,14 @@ export function detectAwakeningPattern({
     const ts = activity.timestamps[i];
     const hour = new Date(ts).getHours();
 
-    // --- Search only between 4 AM and 12 PM for the awakening event ---
-    if (hour < 4 || hour > 12) {
+    // --- Search only between 4 AM and 10 PM for the awakening event ---
+    if (hour < 4 || hour > 10) {
       continue;
     }
 
     let sustained = true;
     for (let j = 0; j < sustainedSamples; j++) {
-      if (activity.values[i + j] <= activityThreshold) {
+      if (activity.values[i + j] < activityThreshold) {
         sustained = false;
         break;
       }

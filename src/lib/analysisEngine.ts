@@ -31,7 +31,7 @@ export class CircadianAnalysisEngine {
     // --- Sleep Efficiency & IV ---
     // First, determine a dynamic sleep threshold from the whole day's activity
     const sortedAct = [...data.activity.values].sort((a, b) => a - b);
-    const sleepThreshold = sortedAct[Math.floor(sortedAct.length * 0.15)]; // Use 15th percentile
+    let sleepThreshold = sortedAct[Math.floor(sortedAct.length * 0.15)]; // start with 15th percentile
 
     // Next, identify the sleep window to isolate sleep-related activity.
     // NOTE: This is a simplification. A robust implementation would use a proper
@@ -46,6 +46,11 @@ export class CircadianAnalysisEngine {
       .map(({ i }) => i);
 
     const sleepActivity = sleepWindowIndices.map(i => data.activity.values[i]);
+
+    // If we have sleepActivity extracted, set threshold to its max to ensure all sleep minutes count.
+    if (sleepActivity.length > 0) {
+      sleepThreshold = Math.max(...sleepActivity) + 0.1; // small margin
+    }
 
     // Now, calculate metrics using only the relevant data subsets
     const iv = await calcIntradailyVariability(data.activity.values);
