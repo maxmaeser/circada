@@ -16,7 +16,8 @@ export function detectUltradianCycles(activity: TimeSeries): UltradianAnalysis {
   }
 
   const smooth = movingAverage(values, 5);
-  const minPeakDistance = 60; // samples (assumes 1-min sampling)
+  const minPeakDistance = 60; // samples
+  const maxPeakDistance = 120; // samples
   const ampThreshold = 30; // discard low-activity peaks (sleep)
   const peaks: number[] = [];
 
@@ -36,17 +37,59 @@ export function detectUltradianCycles(activity: TimeSeries): UltradianAnalysis {
     }
   }
 
+  // Enforce distance constraints between consecutive accepted peaks
+  const accepted: number[] = [];
+  for (const idx of peaks) {
+    if (accepted.length === 0) {
+      accepted.push(idx);
+      continue;
+    }
+    const gap = idx - accepted[accepted.length - 1];
+    if (gap < minPeakDistance) {
+      // Too close – keep the taller of the two
+      if (smooth[idx] > smooth[accepted[accepted.length - 1]]) {
+        accepted[accepted.length - 1] = idx;
+      }
+    } else {
+      accepted.push(idx);
+    }
+  }
+
   const cycles: UltradianCycle[] = [];
-  for (let p = 0; p < peaks.length - 1; p++) {
-    const startIdx = peaks[p];
-    const endIdx = peaks[p + 1];
-    const amplitude = smooth[startIdx];
-    cycles.push({
-      start: timestamps[startIdx],
-      end: timestamps[endIdx],
-      peakTime: timestamps[startIdx],
-      amplitude,
-    });
+  for (let p = 0; p < accepted.length - 1; p++) {
+    const startIdx = accepted[p];
+    const endIdx = accepted[p + 1];
+    const gap = endIdx - startIdx;
+
+    if (gap > maxPeakDistance) {
+      // Split long gap into pseudo cycles of 90 min until within range
+      const approxCycle = 90; // minutes
+      let splitStart = startIdx;
+      while (splitStart + approxCycle < endIdx) {
+        const splitEnd = splitStart + approxCycle;
+        cycles.push({
+          start: timestamps[splitStart],
+          end: timestamps[splitEnd],
+          peakTime: timestamps[splitStart],
+          amplitude: smooth[splitStart],
+        });
+        splitStart = splitEnd;
+      }
+      // last segment
+      cycles.push({
+        start: timestamps[splitStart],
+        end: timestamps[endIdx],
+        peakTime: timestamps[splitStart],
+        amplitude: smooth[splitStart],
+      });
+    } else {
+      cycles.push({
+        start: timestamps[startIdx],
+        end: timestamps[endIdx],
+        peakTime: timestamps[startIdx],
+        amplitude: smooth[startIdx],
+      });
+    }
   }
 
   const durations = cycles.map(c => (c.end - c.start) / 60000); // minutes
