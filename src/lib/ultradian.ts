@@ -17,10 +17,16 @@ export function detectUltradianCycles(activity: TimeSeries): UltradianAnalysis {
 
   const smooth = movingAverage(values, 5);
   const minPeakDistance = 60; // samples (assumes 1-min sampling)
+  const ampThreshold = 30; // discard low-activity peaks (sleep)
   const peaks: number[] = [];
 
   for (let i = 1; i < smooth.length - 1; i++) {
     if (smooth[i] > smooth[i - 1] && smooth[i] > smooth[i + 1]) {
+      if (smooth[i] < ampThreshold) continue; // skip low peaks
+
+      const hour = new Date(timestamps[i]).getHours();
+      if (hour < 7 || hour > 22) continue; // skip outside waking window
+
       if (peaks.length === 0 || i - peaks[peaks.length - 1] >= minPeakDistance) {
         peaks.push(i);
       } else if (smooth[i] > smooth[peaks[peaks.length - 1]]) {
