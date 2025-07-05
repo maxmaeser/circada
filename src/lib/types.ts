@@ -60,4 +60,13 @@ export interface UltradianAnalysis {
   cycles: UltradianCycle[];
   avgDurationMinutes: number;
   cycleCount: number;
+  /**
+   * Internal debugging data. Not for production use.
+   * Filtered out by the JSON.stringify replacer in the debug component.
+   */
+  _debug?: {
+    smoothedActivity?: number[];
+    candidatePeaks?: number[];
+    filteredPeaks?: number[];
+  }
 } 

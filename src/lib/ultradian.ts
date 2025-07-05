@@ -80,5 +80,10 @@ export function detectUltradianCycles(activity: TimeSeries): UltradianAnalysis {
     cycles,
     avgDurationMinutes: avgDuration,
     cycleCount: cycles.length,
+    _debug: {
+      smoothedActivity: smooth,
+      candidatePeaks: candidatePeaks,
+      filteredPeaks: filteredPeaks,
+    }
   };
 } 
