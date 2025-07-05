@@ -1,6 +1,7 @@
 import type { DataProvider } from "./dataProvider";
 import { detectAwakeningPattern } from "./phaseDetection";
 import { calcIntradailyVariability, calcSleepEfficiency } from "./tauriBridge";
+import { detectUltradianCycles } from "./ultradian";
 import type { DerivedMetric, CircadianAnalysis } from "./types";
 import { ADHD_THRESHOLDS } from "./constants";
 
@@ -56,6 +57,9 @@ export class CircadianAnalysisEngine {
     const iv = await calcIntradailyVariability(data.activity.values);
     const sleepEffRes = await calcSleepEfficiency(sleepActivity, sleepThreshold);
 
+    // Ultradian cycles (TS)
+    const ultradian = detectUltradianCycles(data.activity);
+
     // ADHD pattern heuristic – simplistic weighting for now
     const adhdScore = this.computeAdhdScore(
       awakening.phaseDelay,
@@ -68,6 +72,7 @@ export class CircadianAnalysisEngine {
       sleepEfficiency: this.metric(sleepEffRes.sleepEfficiency),
       temperaturePhaseDelay: this.metric(awakening.phaseDelay),
       adhdPatternScore: this.metric(adhdScore, 0.5),
+      ultradian: this.metric(ultradian, 0.8),
     };
 
     return analysis;

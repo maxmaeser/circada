@@ -29,7 +29,7 @@ export default function AnalysisDebug() {
         {loading ? "Running…" : "Run Mock Analysis"}
       </button>
       {result && (
-        <pre className="mt-4 whitespace-pre-wrap break-all max-h-96 overflow-auto">
+        <pre className="mt-4 whitespace-pre-wrap break-all max-h-96 overflow-auto text-left">
           {JSON.stringify(result, null, 2)}
         </pre>
       )}

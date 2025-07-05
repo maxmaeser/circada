@@ -44,5 +44,20 @@ export interface CircadianAnalysis {
   sleepEfficiency?: DerivedMetric<number>;
   temperaturePhaseDelay?: DerivedMetric<number>; // hours
   adhdPatternScore?: DerivedMetric<number>;      // 0-1
+  ultradian?: DerivedMetric<UltradianAnalysis>;
   // Additional results added incrementally as modules mature
+}
+
+// ------------ Ultradian -------------
+export interface UltradianCycle {
+  start: EpochMs;
+  end: EpochMs;
+  peakTime: EpochMs;
+  amplitude: number;
+}
+
+export interface UltradianAnalysis {
+  cycles: UltradianCycle[];
+  avgDurationMinutes: number;
+  cycleCount: number;
 } 
