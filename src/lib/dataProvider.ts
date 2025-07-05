@@ -55,10 +55,10 @@ export class MockDataProvider implements DataProvider {
     // Sharp transitions for "ideal" healthy data
     if (hour >= wakeHour && hour < bedHour) {
       // Daytime: high, stable activity
-      return 100 + Math.random() * 20; // 100-120
+      return 80 + Math.random() * 20; // 80-100
     } else {
-      // Nighttime: low, stable activity
-      return 5 + Math.random() * 10; // 5-15
+      // Nighttime: very low, stable activity
+      return 1 + Math.random() * 4; // 1-5
     }
   }
 

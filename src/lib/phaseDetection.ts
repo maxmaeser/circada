@@ -33,12 +33,21 @@ export function detectAwakeningPattern({
   // 1. Determine dynamic activity threshold (75th percentile of the whole day)
   const activityThreshold = percentile(activity.values, 75);
 
-  // 2. Find first sustained 15-minute window above threshold
+  // 2. Find first sustained 15-minute window above threshold within a plausible morning window
   const sustainedMinutes = 15;
   const sustainedSamples = sustainedMinutes; // assuming 1-min sampling for now
-  let awakeningIdx = 0;
+  let awakeningIdx = -1;
   const len = activity.values.length;
+
   for (let i = 0; i < len - sustainedSamples; i++) {
+    const ts = activity.timestamps[i];
+    const hour = new Date(ts).getHours();
+
+    // --- Search only between 4 AM and 12 PM for the awakening event ---
+    if (hour < 4 || hour > 12) {
+      continue;
+    }
+
     let sustained = true;
     for (let j = 0; j < sustainedSamples; j++) {
       if (activity.values[i + j] <= activityThreshold) {
@@ -51,6 +60,12 @@ export function detectAwakeningPattern({
       break;
     }
   }
+  
+  if (awakeningIdx === -1) {
+    // If no awakening found in window, fallback to a default or handle error
+    awakeningIdx = Math.floor(len / 4); // Fallback to ~6am for a 24h period
+  }
+
   const awakeningTime = activity.timestamps[awakeningIdx];
 
   // 3. Temperature rise slope – compute difference over next 2h (120 samples)
