@@ -49,17 +49,25 @@ export class MockDataProvider implements DataProvider {
   private syntheticActivity(ts: EpochMs): number {
     const date = new Date(ts);
     const hour = date.getHours() + date.getMinutes() / 60;
-    // Low at night, peaks midday; simplistic sine wave plus noise
-    const base = Math.max(0, Math.sin(((hour - 6) / 24) * Math.PI * 2));
-    return base * 100 + Math.random() * 10;
+    const wakeHour = 7;
+    const bedHour = 22;
+
+    // Sharp transitions for "ideal" healthy data
+    if (hour >= wakeHour && hour < bedHour) {
+      // Daytime: high, stable activity
+      return 100 + Math.random() * 20; // 100-120
+    } else {
+      // Nighttime: low, stable activity
+      return 5 + Math.random() * 10; // 5-15
+    }
   }
 
   private syntheticTemperature(ts: EpochMs): number {
     const date = new Date(ts);
     const hour = date.getHours() + date.getMinutes() / 60;
-    // Min at 4-5 AM, max late afternoon ~5 PM
-    const phase = ((hour - 16) / 24) * Math.PI * 2;
-    const base = 36.5 + 0.5 * -Math.cos(phase); // amplitude 0.5°C
+    // Corrected rhythm: nadir (lowest point) at 4 AM
+    const phase = ((hour - 4) / 24) * Math.PI * 2;
+    const base = 36.5 - 0.4 * Math.cos(phase); // amplitude 0.4°C
     return base + (Math.random() - 0.5) * 0.05; // ±0.05°C noise
   }
 } 

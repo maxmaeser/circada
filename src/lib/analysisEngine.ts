@@ -28,13 +28,28 @@ export class CircadianAnalysisEngine {
       temperature: data.temperature,
     });
 
-    // Intra-daily variability (Rust)
-    const iv = await calcIntradailyVariability(data.activity.values);
-
-    // Sleep efficiency (Rust) – derive threshold dynamically as 10th percentile
+    // --- Sleep Efficiency & IV ---
+    // First, determine a dynamic sleep threshold from the whole day's activity
     const sortedAct = [...data.activity.values].sort((a, b) => a - b);
-    const sleepThreshold = sortedAct[Math.floor(sortedAct.length * 0.1)];
-    const sleepEffRes = await calcSleepEfficiency(data.activity.values, sleepThreshold);
+    const sleepThreshold = sortedAct[Math.floor(sortedAct.length * 0.15)]; // Use 15th percentile
+
+    // Next, identify the sleep window to isolate sleep-related activity.
+    // NOTE: This is a simplification. A robust implementation would use a proper
+    // sleep window detection algorithm (e.g., from `sleepAnalysis` HealthKit data).
+    // For our mock data, we'll assume a window from 10 PM to 7 AM.
+    const sleepWindowIndices = data.activity.timestamps
+      .map((ts, i) => ({ ts, i }))
+      .filter(({ ts }) => {
+        const hour = new Date(ts).getHours();
+        return hour >= 22 || hour < 7;
+      })
+      .map(({ i }) => i);
+
+    const sleepActivity = sleepWindowIndices.map(i => data.activity.values[i]);
+
+    // Now, calculate metrics using only the relevant data subsets
+    const iv = await calcIntradailyVariability(data.activity.values);
+    const sleepEffRes = await calcSleepEfficiency(sleepActivity, sleepThreshold);
 
     // ADHD pattern heuristic – simplistic weighting for now
     const adhdScore = this.computeAdhdScore(
