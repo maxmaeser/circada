@@ -8,6 +8,7 @@ import RhythmTimeline from "@/components/RhythmTimeline"
 import PhaseGrid from "@/components/PhaseGrid"
 import CircadianWave from "@/components/CircadianWave"
 import ThemeDropdown from "@/components/ThemeDropdown"
+import AnalysisDebug from "@/components/AnalysisDebug"
 
 export default function App() {
   const setCurrentTime = useAppStore((state) => state.setCurrentTime)
@@ -28,6 +29,7 @@ export default function App() {
           <PhaseGrid />
           <CircadianWave />
           <ThemeDropdown />
+          {import.meta.env.DEV && <AnalysisDebug />}
         </CardContent>
       </Card>
     </div>
