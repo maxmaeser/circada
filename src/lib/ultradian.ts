@@ -49,28 +49,36 @@ export function detectUltradianCycles(activity: TimeSeries): UltradianAnalysis {
     return hour >= 7 && hour < 22;
   });
 
-  // 3. Process filtered peaks to form valid cycles
-  const cycles: UltradianCycle[] = [];
-  if (filteredPeaks.length < 2) {
-    return { cycles: [], avgDurationMinutes: 0, cycleCount: 0 };
+  // 3. Collapse peaks that are closer than minPeakDistance keeping tallest
+  const reducedPeaks: number[] = [];
+  for (const idx of filteredPeaks) {
+    if (reducedPeaks.length === 0) {
+      reducedPeaks.push(idx);
+      continue;
+    }
+    const last = reducedPeaks[reducedPeaks.length - 1];
+    if (idx - last < minPeakDistance) {
+      if (smooth[idx] > smooth[last]) {
+        reducedPeaks[reducedPeaks.length - 1] = idx;
+      }
+    } else {
+      reducedPeaks.push(idx);
+    }
   }
 
-  let lastPeakIdx = filteredPeaks[0];
-
-  for (let i = 1; i < filteredPeaks.length; i++) {
-    const currentPeakIdx = filteredPeaks[i];
-    const gap = currentPeakIdx - lastPeakIdx;
-
+  const cycles: UltradianCycle[] = [];
+  for (let i = 1; i < reducedPeaks.length; i++) {
+    const prev = reducedPeaks[i - 1];
+    const curr = reducedPeaks[i];
+    const gap = curr - prev;
     if (gap >= minPeakDistance && gap <= maxPeakDistance) {
       cycles.push({
-        start: timestamps[lastPeakIdx],
-        end: timestamps[currentPeakIdx],
-        peakTime: timestamps[lastPeakIdx],
-        amplitude: smooth[lastPeakIdx],
+        start: timestamps[prev],
+        end: timestamps[curr],
+        peakTime: timestamps[prev],
+        amplitude: smooth[prev],
       });
     }
-    // The current peak always becomes the start of the next potential cycle
-    lastPeakIdx = currentPeakIdx;
   }
 
   const durations = cycles.map(c => (c.end - c.start) / 60000);
@@ -84,6 +92,7 @@ export function detectUltradianCycles(activity: TimeSeries): UltradianAnalysis {
       smoothedActivity: smooth,
       candidatePeaks: candidatePeaks,
       filteredPeaks: filteredPeaks,
+      reducedPeaks: reducedPeaks,
     }
   };
 } 
