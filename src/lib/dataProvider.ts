@@ -52,10 +52,15 @@ export class MockDataProvider implements DataProvider {
     const wakeHour = 7;
     const bedHour = 22;
 
-    // Sharp transitions for "ideal" healthy data
     if (hour >= wakeHour && hour < bedHour) {
-      // Daytime: high, stable activity
-      return 80 + Math.random() * 20; // 80-100
+      // Daytime: high activity with a 90-minute ultradian rhythm superimposed
+      const baseActivity = 80;
+      const ultradianAmplitude = 15; // The rise and fall of focus
+      const cycleMinutes = 90;
+      const minutesIntoDay = (hour - wakeHour) * 60;
+      const phase = (minutesIntoDay % cycleMinutes / cycleMinutes) * 2 * Math.PI;
+      const ultradianComponent = ultradianAmplitude * Math.sin(phase);
+      return baseActivity + ultradianComponent + (Math.random() * 5);
     } else {
       // Nighttime: very low, stable activity
       return 1 + Math.random() * 4; // 1-5
