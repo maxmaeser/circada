@@ -1,4 +1,4 @@
-import { DataProvider } from "./dataProvider";
+import type { DataProvider } from "./dataProvider";
 import { detectAwakeningPattern } from "./phaseDetection";
 import { calcIntradailyVariability, calcSleepEfficiency } from "./tauriBridge";
 import type { DerivedMetric, CircadianAnalysis } from "./types";
