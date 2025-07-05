@@ -22,11 +22,23 @@ export function detectUltradianCycles(activity: TimeSeries): UltradianAnalysis {
   const maxPeakDistance = 120;
   const ampThreshold = 30;
 
-  // 1. Find all candidate peaks
+  // 1. Find all candidate peaks using a plateau-aware algorithm
   const candidatePeaks: number[] = [];
   for (let i = 1; i < smooth.length - 1; i++) {
-    if (smooth[i] > smooth[i - 1] && smooth[i] > smooth[i + 1]) {
-      candidatePeaks.push(i);
+    // Check for the start of a potential peak or plateau
+    if (smooth[i] > smooth[i - 1]) {
+      let j = i;
+      // Find the end of the plateau
+      while (j < smooth.length - 1 && smooth[j] === smooth[j + 1]) {
+        j++;
+      }
+      // Check if the point after the plateau is lower
+      if (j < smooth.length - 1 && smooth[j] > smooth[j + 1]) {
+        // We found a peak/plateau, take the middle point
+        candidatePeaks.push(Math.floor((i + j) / 2));
+      }
+      // Move past the plateau we just processed
+      i = j;
     }
   }
 
