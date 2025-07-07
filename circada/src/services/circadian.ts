@@ -14,7 +14,7 @@ export const defaultPhases: CircadianPhase[] = [
   { name: 'Night', start: 0, end: 6, description: 'Sleep and recovery.' },
 ];
 
-export const getCurrentPhase = (date: Date = new Date()): CircadianPhase | undefined => {
+export const getCurrentPhase = (date: Date = new Date(), phases: CircadianPhase[] = defaultPhases): CircadianPhase | undefined => {
   const currentHour = date.getHours();
-  return defaultPhases.find(phase => currentHour >= phase.start && currentHour < phase.end);
+  return phases.find(phase => currentHour >= phase.start && currentHour < phase.end);
 }; 
