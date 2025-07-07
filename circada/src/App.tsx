@@ -6,9 +6,18 @@ import { Progress } from './components/ui/progress';
 import { formatTimeRemaining, formatTime, getPhaseProgress, getTimeUntilHour } from './utils/time';
 import { Badge } from './components/ui/badge';
 import { ArrowDown, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 function App() {
   const { currentPhase } = useCircadianPhase();
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   if (!currentPhase) {
     return (
@@ -20,6 +29,7 @@ function App() {
 
   const progress = getPhaseProgress(currentPhase.start, currentPhase.end);
   const timeRemaining = getTimeUntilHour(currentPhase.end);
+  const currentTimePosition = ((currentTime.getHours() + currentTime.getMinutes() / 60) / 24) * 100;
 
   return (
     <div className="min-h-screen !bg-zinc-900 p-8 flex flex-col items-center justify-center">
@@ -62,7 +72,7 @@ function App() {
                   <div className="flex items-center justify-center gap-2">
                     <Clock className="w-5 h-5 !text-purple-400" />
                     <span className="text-3xl font-bold !text-white font-mono">
-                      {formatTimeRemaining(timeRemaining)}
+                      {Math.floor(timeRemaining)}h {Math.floor((timeRemaining % 1) * 60)}m {Math.floor(((timeRemaining % 1) * 60 % 1) * 60)}s
                     </span>
                   </div>
                 </div>
@@ -75,9 +85,9 @@ function App() {
                   </div>
                   
                   {/* 24-Hour Phase Timeline */}
-                  <div className="relative w-full h-4 bg-zinc-700 rounded-full overflow-hidden">
+                  <div className="relative w-full h-4 bg-zinc-700 rounded-full overflow-visible">
                     {/* Phase Background Colors */}
-                    <div className="absolute inset-0 flex">
+                    <div className="absolute inset-0 flex rounded-full overflow-hidden">
                       <div className="h-full bg-gradient-to-r from-indigo-600 to-purple-700" style={{ width: `${(5/24) * 100}%` }} />
                       <div className="h-full bg-gradient-to-r from-purple-500 to-blue-600" style={{ width: `${(1/24) * 100}%` }} />
                       <div className="h-full bg-gradient-to-r from-blue-400 to-cyan-500" style={{ width: `${(2/24) * 100}%` }} />
@@ -89,12 +99,22 @@ function App() {
                     
                     {/* Current Time Indicator */}
                     <div 
-                      className="absolute top-0 w-1 h-full bg-white shadow-lg z-10"
+                      className="absolute -top-1 w-0.5 h-6 bg-white shadow-lg z-20 rounded-full"
                       style={{ 
-                        left: `${((new Date().getHours() + new Date().getMinutes() / 60) / 24) * 100}%`,
+                        left: `${currentTimePosition}%`,
                         transform: 'translateX(-50%)'
                       }}
                     />
+                    
+                    {/* Floating Timer */}
+                    <div 
+                      className="absolute -top-8 transform -translate-x-1/2 z-30"
+                      style={{ left: `${currentTimePosition}%` }}
+                    >
+                      <div className="bg-white text-black text-xs font-mono px-2 py-1 rounded shadow-lg">
+                        {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                      </div>
+                    </div>
                   </div>
                   
                   {/* Current Phase Progress */}
@@ -107,17 +127,31 @@ function App() {
             </CardContent>
           </Card>
 
-          {/* 24hr Rhythm Wave Card */}
+          {/* Ultradian Rhythm Wave Card */}
           <Card className="!bg-zinc-800 !border-zinc-700">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold !text-white">24-Hour Rhythm Wave</CardTitle>
+              <CardTitle className="text-lg font-semibold !text-white">Ultradian Rhythm (90-min cycles)</CardTitle>
             </CardHeader>
             <CardContent>
-              <WaveVisualization currentTime={new Date()} />
-              <div className="mt-4 text-center">
-                <p className="text-sm !text-zinc-500">
-                  Wave shows natural energy levels throughout the day
-                </p>
+              <WaveVisualization currentTime={currentTime} />
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm !text-zinc-400">Current Cycle:</span>
+                  <span className="text-sm !text-white font-mono">
+                    {Math.floor((currentTime.getHours() * 60 + currentTime.getMinutes()) / 90) + 1} of 16
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm !text-zinc-400">Next Cycle in:</span>
+                  <span className="text-sm !text-white font-mono">
+                    {90 - ((currentTime.getHours() * 60 + currentTime.getMinutes()) % 90)} min
+                  </span>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm !text-zinc-500">
+                    90-minute energy cycles throughout the day
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>

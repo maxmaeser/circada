@@ -7,7 +7,7 @@ interface WaveVisualizationProps {
 const WaveVisualization: React.FC<WaveVisualizationProps> = ({ currentTime }) => {
   const currentHour = currentTime.getHours() + currentTime.getMinutes() / 60;
 
-  // Generate wave points based on circadian rhythm
+  // Generate wave points based on ultradian rhythms (90-minute cycles)
   const generateWavePoints = () => {
     const points = [];
     const width = 800;
@@ -16,24 +16,26 @@ const WaveVisualization: React.FC<WaveVisualizationProps> = ({ currentTime }) =>
 
     for (let x = 0; x <= width; x += 4) {
       const hour = (x / width) * 24;
-      // Create a circadian rhythm wave
-      // High energy: 8-14h, Low energy: 14-16h, Medium: 16-22h, Very low: 22-6h
+      const minutes = hour * 60;
+      
+      // Create ultradian rhythm wave (90-minute cycles)
+      // Each cycle: 60 min high energy + 30 min low energy
+      const cyclePosition = (minutes % 90) / 90; // 0-1 within each 90-min cycle
+      
       let energy = 0.5;
-      if (hour >= 6 && hour < 8) {
-        // Wake up - rising energy
-        energy = 0.3 + (hour - 6) * 0.2;
-      } else if (hour >= 8 && hour < 14) {
-        // Peak alertness
-        energy = 0.7 + Math.sin((hour - 8) / 6 * Math.PI) * 0.2;
-      } else if (hour >= 14 && hour < 16) {
-        // Afternoon dip
-        energy = 0.4 - Math.sin((hour - 14) / 2 * Math.PI) * 0.2;
-      } else if (hour >= 16 && hour < 22) {
-        // Evening recovery
-        energy = 0.5;
+      if (cyclePosition < 0.67) {
+        // High energy phase (60 minutes of 90-minute cycle)
+        energy = 0.6 + Math.sin(cyclePosition * Math.PI * 1.5) * 0.3;
       } else {
-        // Night time - low energy
-        energy = 0.2;
+        // Low energy phase (30 minutes of 90-minute cycle)  
+        energy = 0.3 + Math.sin((cyclePosition - 0.67) * Math.PI * 3) * 0.2;
+      }
+      
+      // Modulate by sleep/wake periods (reduce during sleep hours)
+      if (hour >= 22 || hour < 6) {
+        energy *= 0.3; // Reduce during sleep
+      } else if (hour >= 6 && hour < 8) {
+        energy *= (0.3 + (hour - 6) * 0.35); // Gradual wake up
       }
       const y = centerY - (energy - 0.5) * height * 0.8;
       points.push(`${x},${y}`);
