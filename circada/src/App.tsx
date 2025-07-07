@@ -1,5 +1,6 @@
 import { useCircadianPhase } from './hooks/useCircadianPhase';
 import WaveVisualization from './components/WaveVisualization';
+import UltradianZoomView from './components/UltradianZoomView';
 import './App.css';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
 import { Progress } from './components/ui/progress';
@@ -42,6 +43,16 @@ function App() {
         </header>
 
         <div className="space-y-6">
+          {/* Ultradian Zoom View Card - First Position */}
+          <Card className="!bg-zinc-800 !border-zinc-700">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold !text-white">Current Ultradian Cycle - Detailed View</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <UltradianZoomView currentTime={currentTime} />
+            </CardContent>
+          </Card>
+
           {/* Current Phase Card */}
           <Card className="!bg-zinc-800 !border-zinc-700">
             <CardHeader>
