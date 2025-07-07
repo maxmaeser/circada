@@ -67,15 +67,40 @@ function App() {
                   </div>
                 </div>
 
-                {/* Progress Bar with Times */}
+                {/* Enhanced Progress Timeline */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm font-mono !text-zinc-400">
                     <span>{formatTime(currentPhase.start)}</span>
                     <span>{formatTime(currentPhase.end)}</span>
                   </div>
+                  
+                  {/* 24-Hour Phase Timeline */}
+                  <div className="relative w-full h-4 bg-zinc-700 rounded-full overflow-hidden">
+                    {/* Phase Background Colors */}
+                    <div className="absolute inset-0 flex">
+                      <div className="h-full bg-gradient-to-r from-indigo-600 to-purple-700" style={{ width: `${(5/24) * 100}%` }} />
+                      <div className="h-full bg-gradient-to-r from-purple-500 to-blue-600" style={{ width: `${(1/24) * 100}%` }} />
+                      <div className="h-full bg-gradient-to-r from-blue-400 to-cyan-500" style={{ width: `${(2/24) * 100}%` }} />
+                      <div className="h-full bg-gradient-to-r from-cyan-400 to-sky-500" style={{ width: `${(4/24) * 100}%` }} />
+                      <div className="h-full bg-gradient-to-r from-sky-500 to-blue-600" style={{ width: `${(4/24) * 100}%` }} />
+                      <div className="h-full bg-gradient-to-r from-blue-600 to-indigo-700" style={{ width: `${(6/24) * 100}%` }} />
+                      <div className="h-full bg-gradient-to-r from-indigo-700 to-purple-800" style={{ width: `${(2/24) * 100}%` }} />
+                    </div>
+                    
+                    {/* Current Time Indicator */}
+                    <div 
+                      className="absolute top-0 w-1 h-full bg-white shadow-lg z-10"
+                      style={{ 
+                        left: `${((new Date().getHours() + new Date().getMinutes() / 60) / 24) * 100}%`,
+                        transform: 'translateX(-50%)'
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Current Phase Progress */}
                   <Progress 
                     value={progress} 
-                    className="h-3 !bg-zinc-700"
+                    className="h-2 !bg-zinc-700"
                   />
                 </div>
               </div>
