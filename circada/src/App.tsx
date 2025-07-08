@@ -1,24 +1,44 @@
 import { useCircadianPhase } from './hooks/useCircadianPhase';
-import WaveVisualization from './components/WaveVisualization';
-import UltradianZoomView from './components/UltradianZoomView';
+import UltradianDashboard from './components/UltradianDashboard';
+import PredictiveAnalytics from './components/PredictiveAnalytics';
+import HealthDataImporter from './components/HealthDataImporter';
 import './App.css';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
-import { Progress } from './components/ui/progress';
-import { formatTimeRemaining, formatTime, getPhaseProgress, getTimeUntilHour } from './utils/time';
 import { Badge } from './components/ui/badge';
-import { ArrowDown, Clock } from 'lucide-react';
+import { Database, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { CircadianAnalysis } from './services/realDataCircadian';
 
 function App() {
   const { currentPhase } = useCircadianPhase();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [realDataAnalysis, setRealDataAnalysis] = useState<CircadianAnalysis | null>(null);
+  const [showRealData, setShowRealData] = useState(false);
+  const [simulatedHeartRate, setSimulatedHeartRate] = useState<number>(75);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
+      
+      // Simulate heart rate variations for demo (remove when real data is available)
+      if (!realDataAnalysis) {
+        const baseHR = 70;
+        const cyclePosition = (currentTime.getHours() * 60 + currentTime.getMinutes()) % 90;
+        const cycleIntensity = cyclePosition <= 60 ? 
+          Math.sin((cyclePosition / 60) * Math.PI) : 
+          0.3 + 0.2 * Math.sin(((cyclePosition - 60) / 30) * Math.PI);
+        
+        const variation = (Math.random() - 0.5) * 10;
+        setSimulatedHeartRate(Math.round(baseHR + cycleIntensity * 20 + variation));
+      }
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [currentTime, realDataAnalysis]);
+
+  const handleHealthDataLoaded = (analysis: CircadianAnalysis) => {
+    setRealDataAnalysis(analysis);
+    setShowRealData(true);
+  };
 
   if (!currentPhase) {
     return (
@@ -28,145 +48,76 @@ function App() {
     );
   }
 
-  const progress = getPhaseProgress(currentPhase.start, currentPhase.end);
-  const timeRemaining = getTimeUntilHour(currentPhase.end);
-  const currentTimePosition = ((currentTime.getHours() + currentTime.getMinutes() / 60) / 24) * 100;
-
   return (
-    <div className="min-h-screen !bg-zinc-900 p-8 flex flex-col items-center justify-center">
-      <div className="w-full max-w-4xl space-y-8">
-        <header className="text-center space-y-3">
-          <h1 className="text-5xl font-extrabold tracking-tighter !text-white">Circada</h1>
-          <p className="text-lg !text-zinc-400">
-            Stay in sync with your natural energy cycles
+    <div className="min-h-screen !bg-zinc-900 p-4 md:p-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* Minimal Header */}
+        <header className="text-center space-y-2">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter !text-white">Circada</h1>
+          <p className="text-sm md:text-lg !text-zinc-400">
+            Your ultradian rhythm at a glance
           </p>
         </header>
 
-        <div className="space-y-6">
-          {/* Ultradian Zoom View Card - First Position */}
-          <Card className="!bg-zinc-800 !border-zinc-700">
+        {/* Health Data Import Section */}
+        {!showRealData && (
+          <HealthDataImporter onDataLoaded={handleHealthDataLoaded} />
+        )}
+
+        {/* Main Ultradian Dashboard - Clean & Minimal */}
+        <UltradianDashboard 
+          currentTime={currentTime} 
+          heartRate={realDataAnalysis ? undefined : simulatedHeartRate}
+          realDataAnalysis={realDataAnalysis}
+        />
+
+        {/* Real Data Summary (when loaded) */}
+        {showRealData && realDataAnalysis && (
+          <Card className="!bg-gradient-to-r from-blue-900/30 to-purple-900/30 !border-blue-500/20">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold !text-white">Current Ultradian Cycle - Detailed View</CardTitle>
+              <CardTitle className="text-lg font-semibold !text-white flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Database className="w-5 h-5 text-blue-400" />
+                  Personal Data Active
+                </div>
+                <Badge className="!bg-green-500/20 !text-green-300 !border-green-500/30">
+                  Live Analysis
+                </Badge>
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <UltradianZoomView currentTime={currentTime} />
-            </CardContent>
-          </Card>
-
-          {/* Current Phase Card */}
-          <Card className="!bg-zinc-800 !border-zinc-700">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold !text-white">Current</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Phase Info */}
-              <div className="text-center space-y-3">
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-3xl">
-                    {currentPhase.name === 'Sleep Zone' || currentPhase.name === 'Night' ? '🌙' : '☀️'}
-                  </span>
-                  <span className="!text-white font-medium text-lg">{currentPhase.description}</span>
-                </div>
-                <div className="flex items-center justify-center gap-2">
-                  <ArrowDown className="w-4 h-4 !text-purple-400" />
-                  <span className="!text-purple-400 font-medium">{currentPhase.name}</span>
-                  <Badge className="!bg-purple-500/20 !text-purple-300 !border-purple-500/30">
-                    Progress {Math.round(progress)}%
-                  </Badge>
-                </div>
-              </div>
-
-              {/* Time Remaining Section */}
-              <div className="space-y-3">
-                <div className="text-center">
-                  <p className="text-sm !text-zinc-400 mb-1">Time Remaining</p>
-                  <div className="flex items-center justify-center gap-2">
-                    <Clock className="w-5 h-5 !text-purple-400" />
-                    <span className="text-3xl font-bold !text-white font-mono">
-                      {Math.floor(timeRemaining)}h {Math.floor((timeRemaining % 1) * 60)}m {Math.floor(((timeRemaining % 1) * 60 % 1) * 60)}s
-                    </span>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                  <div className="text-lg font-bold !text-blue-300">
+                    {Math.floor(realDataAnalysis.personalizedWakeTime)}:{String(Math.round((realDataAnalysis.personalizedWakeTime % 1) * 60)).padStart(2, '0')}
                   </div>
+                  <div className="text-xs !text-zinc-400">Your Wake Time</div>
                 </div>
-
-                {/* Enhanced Progress Timeline */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm font-mono !text-zinc-400">
-                    <span>{formatTime(currentPhase.start)}</span>
-                    <span>{formatTime(currentPhase.end)}</span>
+                <div>
+                  <div className="text-lg font-bold !text-purple-300">
+                    {Math.floor(realDataAnalysis.personalizedSleepTime)}:{String(Math.round((realDataAnalysis.personalizedSleepTime % 1) * 60)).padStart(2, '0')}
                   </div>
-                  
-                  {/* 24-Hour Phase Timeline */}
-                  <div className="relative w-full h-4 bg-zinc-700 rounded-full overflow-visible">
-                    {/* Phase Background Colors */}
-                    <div className="absolute inset-0 flex rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-indigo-600 to-purple-700" style={{ width: `${(5/24) * 100}%` }} />
-                      <div className="h-full bg-gradient-to-r from-purple-500 to-blue-600" style={{ width: `${(1/24) * 100}%` }} />
-                      <div className="h-full bg-gradient-to-r from-blue-400 to-cyan-500" style={{ width: `${(2/24) * 100}%` }} />
-                      <div className="h-full bg-gradient-to-r from-cyan-400 to-sky-500" style={{ width: `${(4/24) * 100}%` }} />
-                      <div className="h-full bg-gradient-to-r from-sky-500 to-blue-600" style={{ width: `${(4/24) * 100}%` }} />
-                      <div className="h-full bg-gradient-to-r from-blue-600 to-indigo-700" style={{ width: `${(6/24) * 100}%` }} />
-                      <div className="h-full bg-gradient-to-r from-indigo-700 to-purple-800" style={{ width: `${(2/24) * 100}%` }} />
-                    </div>
-                    
-                    {/* Current Time Indicator */}
-                    <div 
-                      className="absolute -top-1 w-0.5 h-6 bg-white shadow-lg z-20 rounded-full"
-                      style={{ 
-                        left: `${currentTimePosition}%`,
-                        transform: 'translateX(-50%)'
-                      }}
-                    />
-                    
-                    {/* Floating Timer */}
-                    <div 
-                      className="absolute -top-8 transform -translate-x-1/2 z-30"
-                      style={{ left: `${currentTimePosition}%` }}
-                    >
-                      <div className="bg-white text-black text-xs font-mono px-2 py-1 rounded shadow-lg">
-                        {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Current Phase Progress */}
-                  <Progress 
-                    value={progress} 
-                    className="h-2 !bg-zinc-700"
-                  />
+                  <div className="text-xs !text-zinc-400">Your Sleep Time</div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold !text-green-300">{Math.round(realDataAnalysis.sleepEfficiency * 100)}%</div>
+                  <div className="text-xs !text-zinc-400">Sleep Efficiency</div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold !text-yellow-300">{realDataAnalysis.energyPeaks?.length || 0}</div>
+                  <div className="text-xs !text-zinc-400">Energy Peaks Today</div>
                 </div>
               </div>
             </CardContent>
           </Card>
+        )}
 
-          {/* Ultradian Rhythm Wave Card */}
-          <Card className="!bg-zinc-800 !border-zinc-700">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold !text-white">Ultradian Rhythm (90-min cycles)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <WaveVisualization currentTime={currentTime} />
-              <div className="mt-4 space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm !text-zinc-400">Current Cycle:</span>
-                  <span className="text-sm !text-white font-mono">
-                    {Math.floor((currentTime.getHours() * 60 + currentTime.getMinutes()) / 90) + 1} of 16
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm !text-zinc-400">Next Cycle in:</span>
-                  <span className="text-sm !text-white font-mono">
-                    {90 - ((currentTime.getHours() * 60 + currentTime.getMinutes()) % 90)} min
-                  </span>
-                </div>
-                <div className="text-center">
-                  <p className="text-sm !text-zinc-500">
-                    90-minute energy cycles throughout the day
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Predictive Analytics - Data Rich Section */}
+        <PredictiveAnalytics 
+          currentTime={currentTime}
+          heartRate={realDataAnalysis ? undefined : simulatedHeartRate}
+          realDataAnalysis={realDataAnalysis}
+        />
       </div>
     </div>
   );
