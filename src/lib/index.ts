@@ -111,6 +111,23 @@ export {
 } from './dataProvider';
 
 // ============================================================================
+// HEALTH DATA INTEGRATION  
+// ============================================================================
+
+/**
+ * Real HealthKit data parsing and circadian analysis.
+ * Processes XML exports and generates personalized circadian patterns.
+ */
+export {
+  HealthDataParser,
+  RealDataCircadianEngine,
+  type HealthRecord,
+  type SleepRecord,
+  type ParsedHealthData,
+  type CircadianAnalysis,
+} from '../services/healthDataTypes';
+
+// ============================================================================
 // STATE MANAGEMENT
 // ============================================================================
 

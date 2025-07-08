@@ -1,6 +1,8 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use serde::{Serialize, Deserialize};
 
+mod healthkit_ffi;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VariabilityResult {
     pub intradaily_variability: f64,
@@ -68,7 +70,12 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             calculate_intradaily_variability,
-            calculate_sleep_efficiency
+            calculate_sleep_efficiency,
+            healthkit_ffi::request_healthkit_permissions,
+            healthkit_ffi::start_healthkit_monitoring,
+            healthkit_ffi::stop_healthkit_monitoring,
+            healthkit_ffi::get_current_heart_rate,
+            healthkit_ffi::healthkit_is_available
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
