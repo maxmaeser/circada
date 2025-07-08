@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Tauri-based desktop application for tracking circadian and ultradian rhythms, built with React, TypeScript, and Tailwind CSS. The app provides real-time visualization of 24-hour circadian cycles and 90-minute ultradian energy cycles with precise timing and sophisticated visualizations.
 
-**NEW: Real Health Data Integration** - The app now analyzes personal HealthKit data (heart rate, sleep, activity) to provide personalized circadian rhythm insights and predictions based on actual physiological patterns.
+**NEW: Live HealthKit Integration** - The app now features real-time heart rate streaming from HealthKit with live cycle adjustments, personalized circadian analysis from historical data, and comprehensive Swift FFI bridge for native macOS integration.
 
 ## Development Commands
 
@@ -46,19 +46,25 @@ npm run preview
 - `public/`: Static assets including health data XML files
 
 ### Critical Files
-- `src/services/healthDataParser.ts`: HealthKit XML parser for real health data
+- `src-tauri/src/healthkit.swift`: Swift HealthKit bridge for live heart rate monitoring
+- `src-tauri/src/healthkit_ffi.rs`: Rust FFI bindings with safe fallback to mock implementations
+- `src/services/liveHealthKit.ts`: TypeScript live data service with cycle adjustment algorithms
+- `src/services/healthDataParser.ts`: HealthKit XML parser for historical health data analysis
 - `src/services/realDataCircadian.ts`: Personal circadian analysis engine
 - `src/components/UltradianDashboard.tsx`: Main minimal dashboard component
-- `src/components/PredictiveAnalytics.tsx`: Data-rich prediction interface
-- `src/components/HealthDataImporter.tsx`: Health data import UI
-- `src/components/App.tsx`: Main application component with real-time updates
+- `src/components/PredictiveAnalytics.tsx`: Data-rich prediction interface with 6-hour forecasting
+- `src/components/MenubarWidget.tsx`: High-performance system tray widget
+- `src/components/App.tsx`: Main application component with live HealthKit integration
 
 ## Key Features
 
-### Real Health Data Integration
-- **HealthKit XML Parser**: Processes 225K+ health records from Apple Health exports
+### Live HealthKit Integration
+- **Real-time Heart Rate Streaming**: Swift FFI bridge for continuous HealthKit monitoring
+- **Live Cycle Adjustments**: Dynamic ultradian cycle modifications based on heart rate patterns
+- **Background Processing**: Efficient background delivery for minimal battery impact
+- **Safe Fallback System**: Automatic mock implementations when HealthKit unavailable
+- **Historical Data Analysis**: Processes 225K+ health records from Apple Health exports
 - **Personal Circadian Analysis**: Calculates individual wake/sleep times from actual data
-- **Heart Rate Integration**: Live heart rate monitoring with prediction adjustments
 - **Sleep Efficiency Analysis**: Real sleep quality metrics and recommendations
 - **Energy Peak Detection**: Identifies personal energy patterns from physiological data
 
@@ -67,7 +73,8 @@ npm run preview
 - **Live Countdown Timer**: MM:SS format with real-time seconds updates
 - **Energy Phase Indicators**: Color-coded High/Low/Transition states with intensity
 - **24-Hour Time Axis**: Wave visualization with actual clock times
-- **Confidence Scoring**: Live data reliability indicators
+- **Live Data Indicators**: Visual indicators when real HealthKit data is streaming
+- **Confidence Scoring**: Live data reliability indicators based on heart rate variance
 
 ### Predictive Analytics
 - **6-Hour Forecasting**: Upcoming energy peaks, troughs, and optimal windows
@@ -78,10 +85,19 @@ npm run preview
 ### State Management
 - Global state managed through Zustand
 - Real-time clock updates via `setInterval` in main App component
+- Live HealthKit integration state with automatic fallback
 - Health data analysis state for personalized rhythms
-- Simulated heart rate for demo when real data unavailable
+- Live cycle adjustment state for real-time modifications
 
 ## Technical Implementation
+
+### Live HealthKit Integration
+- `src-tauri/src/healthkit.swift`: Complete Swift HealthKit bridge with real-time monitoring
+- `src-tauri/src/healthkit_ffi.rs`: Safe Rust FFI bindings with panic handling and fallback
+- `src/services/liveHealthKit.ts`: TypeScript service for live data streaming via Tauri events
+- `src-tauri/build.rs`: Comprehensive Swift compilation pipeline for production builds
+- Background delivery for continuous updates with minimal battery impact
+- Automatic permissions handling and availability detection
 
 ### Health Data Processing
 - `src/services/healthDataParser.ts`: Parses HealthKit XML exports with comprehensive record types
@@ -89,6 +105,7 @@ npm run preview
 - Heart rate analysis with confidence scoring based on variance from expected patterns
 - Sleep pattern analysis from actual sleep/wake records over 30-day periods
 - Energy peak detection using heart rate data and plateau-aware algorithms
+- Live cycle adjustment algorithms for real-time rhythm modifications
 
 ### Rhythm Calculations
 Real-time calculations with second-level precision:
@@ -135,11 +152,14 @@ Real-time calculations with second-level precision:
 - Main window and menubar configurations in `src-tauri/tauri.conf.json`
 - Multiple entry points: `index.html` (main) and `menubar.html` (compact view)
 - Native macOS integration with system tray support
+- macOS 13.0+ minimum version for HealthKit compatibility
+- Swift compilation integration in build process
 
 ### Development Flow
 - Frontend development: `npm run dev` for web-based development
 - Desktop development: `npm run tauri dev` for native app testing
-- Build process handles both React compilation and Rust compilation
+- Build process handles React, Rust, and Swift compilation
+- Live HealthKit integration automatically enabled in production
 
 ## Testing Strategy
 
@@ -157,15 +177,19 @@ Real-time calculations with second-level precision:
 ## Current Focus Areas
 
 Latest implementation focuses on:
-1. **Real Health Data Integration**: Personal HealthKit data analysis for individualized rhythms
-2. **Minimal Dashboard Design**: Clean, focused UI prioritizing current ultradian cycle status
-3. **Predictive Analytics**: Data-driven forecasting with confidence scoring and recommendations
-4. **Live Data Synchronization**: Heart rate integration with real-time adjustments to predictions
-5. **Performance Optimization**: Efficient processing of large health datasets (225K+ records)
+1. **Live HealthKit Integration**: Real-time heart rate streaming with Swift FFI bridge
+2. **Dynamic Cycle Adjustments**: Live modifications to ultradian cycles based on physiological data
+3. **Minimal Dashboard Design**: Clean, focused UI prioritizing current ultradian cycle status
+4. **Predictive Analytics**: Data-driven forecasting with confidence scoring and recommendations
+5. **Desktop Widget Development**: Efficient macOS desktop widget for system tray integration
+6. **Performance Optimization**: Efficient processing of large health datasets (225K+ records)
 
 ## Performance Considerations
 
 - Real-time updates every second require efficient rendering
 - State management optimized for frequent timer updates
 - Component re-rendering minimized through proper React optimization
+- Live HealthKit integration optimized for minimal battery impact
+- Swift FFI bridge provides native performance for health data processing
+- Background delivery ensures continuous monitoring without performance degradation
 - Tauri provides native performance for desktop integration
