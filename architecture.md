@@ -4,6 +4,8 @@
 
 The application is a sophisticated native desktop app for macOS built with Tauri and React. It provides comprehensive circadian and ultradian rhythm tracking with real-time visualization and precise timing features.
 
+**Major Update**: The app now integrates real HealthKit data to provide personalized circadian rhythm analysis based on actual physiological patterns rather than generic assumptions.
+
 *   **Frontend**: React with TypeScript, built using Vite. Features a component-based architecture with specialized rhythm tracking components.
 *   **Styling**: [shadcn/ui](https://ui.shadcn.com/) and [Tailwind CSS](https://tailwindcss.com/) for a modern, utility-first approach with dynamic color theming.
 *   **Backend & Packaging**: [Tauri](https://tauri.app/) wraps the web frontend into a lightweight, secure, and native macOS application. All application logic is currently client-side.
@@ -18,19 +20,25 @@ circada/
 │
 ├── src/
 │   ├── components/
-│   │   ├── UltradianZoomView.tsx    # Primary: Detailed 90-min cycle view
-│   │   ├── UltradianZoomedGraph.tsx # SVG-based energy wave visualization
-│   │   ├── WaveVisualization.tsx    # 24-hour ultradian rhythm display
+│   │   ├── UltradianDashboard.tsx   # Primary: Minimal dashboard for current cycle
+│   │   ├── PredictiveAnalytics.tsx  # Data-rich predictive interface
+│   │   ├── HealthDataImporter.tsx   # Health data import and analysis UI
 │   │   ├── MenubarView.tsx          # Compact menubar interface
-│   │   └── ui/                      # shadcn/ui components (Card, Progress, etc.)
+│   │   └── ui/                      # shadcn/ui components (Card, Progress, Button, etc.)
+│   ├── services/
+│   │   ├── healthDataParser.ts      # HealthKit XML parser for real data
+│   │   ├── realDataCircadian.ts     # Personal circadian analysis engine
+│   │   └── circadian.ts             # Legacy rhythm calculation algorithms
 │   ├── hooks/
 │   │   └── useCircadianPhase.ts     # Real-time circadian phase state management
-│   ├── services/
-│   │   └── circadian.ts             # Core rhythm calculation algorithms
 │   ├── utils/
 │   │   └── time.ts                  # Time formatting and precision calculations
-│   ├── App.tsx                      # Main application component with layout
+│   ├── App.tsx                      # Main application component with health data integration
 │   └── main.tsx                     # React root renderer
+│
+├── public/
+│   ├── export.xml                   # Sample HealthKit data for testing
+│   └── export_cda.xml               # Clinical document format data
 │
 ├── src-tauri/
 │   ├── icons/                       # Application icons
@@ -72,24 +80,31 @@ flowchart TD
 
 ## 4. Current Feature Set
 
-### Primary Interface: Ultradian Zoom View
-- **Real-time 90-minute cycle tracking** with precise positioning
-- **Energy phase detection**: High Energy (0-60min) vs Low Energy (60-90min)
-- **Dynamic intensity calculation** with realistic energy curve modeling
-- **Large floating countdown timer** showing minutes:seconds remaining
-- **Full-width SVG energy graph** with color-coded backgrounds and grid markers
+### Real Health Data Integration
+- **HealthKit XML Parser**: Processes Apple Health exports with 225K+ records
+- **Personal Circadian Analysis**: Calculates individual wake/sleep patterns from actual data
+- **Heart Rate Integration**: Live monitoring with prediction confidence scoring
+- **Sleep Efficiency Analysis**: Real sleep quality metrics and personalized recommendations
+- **Energy Peak Detection**: Identifies personal energy patterns from physiological data
 
-### Secondary Interface: Circadian Overview  
-- **24-hour circadian phase timeline** with colored gradient backgrounds
-- **Live position indicator** moving across daily timeline
-- **Current phase information** with descriptions and progress
-- **Dual timer system**: Phase remaining + daily position
+### Minimal Dashboard Interface
+- **UltradianDashboard**: Clean, focused view of current 90-minute cycle status
+- **Live Countdown Timer**: MM:SS format with real-time seconds updates
+- **Energy Phase Indicators**: Color-coded High/Low/Transition states with intensity percentages
+- **24-Hour Time Axis**: Wave visualization with actual clock times (HH:MM format)
+- **Confidence Scoring**: Live data reliability indicators based on heart rate variance
 
-### Enhanced Visual Features
-- **Color-coded energy phases** (green for high energy, blue for low energy)
-- **Real-time floating timers** positioned above graph indicators
-- **Responsive layout** with priority given to ultradian detail view
-- **Second-level precision** for all timing calculations
+### Predictive Analytics Interface
+- **6-Hour Forecasting**: Upcoming energy peaks, troughs, and optimal focus windows
+- **Heart Rate Variance Analysis**: Real-time comparison with expected patterns
+- **Personal Insights**: Data-driven recommendations based on individual sleep/energy patterns
+- **2-Hour Energy Graph**: Visual timeline of predicted energy levels with confidence bands
+
+### Enhanced User Experience
+- **Health Data Import**: Easy-to-use interface for loading HealthKit exports
+- **Real vs Simulated Data**: Toggle between personal data analysis and demo mode
+- **Live Data Adjustments**: Real-time prediction updates based on current heart rate
+- **Responsive Design**: Clean, minimal top dashboard with data-rich sections below
 
 ## 5. Next Steps & Future Enhancements
 

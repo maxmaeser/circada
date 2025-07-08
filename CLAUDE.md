@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Tauri-based desktop application for tracking circadian and ultradian rhythms, built with React, TypeScript, and Tailwind CSS. The app provides real-time visualization of 24-hour circadian cycles and 90-minute ultradian energy cycles with precise timing and sophisticated visualizations.
 
+**NEW: Real Health Data Integration** - The app now analyzes personal HealthKit data (heart rate, sleep, activity) to provide personalized circadian rhythm insights and predictions based on actual physiological patterns.
+
 ## Development Commands
 
 ```bash
@@ -39,45 +41,61 @@ npm run preview
 
 ### Key Directories
 - `src/components/`: React components, including specialized rhythm tracking UI
-- `src/lib/`: Core business logic, utilities, and state management
+- `src/services/`: Core business logic for health data and rhythm analysis
 - `src-tauri/`: Rust code for desktop integration
-- `src/lib/index.ts`: Comprehensive library exports for all modules
+- `public/`: Static assets including health data XML files
 
 ### Critical Files
-- `src/lib/circadian.ts`: Core circadian rhythm calculation algorithms
-- `src/lib/ultradian.ts`: 90-minute ultradian cycle calculations
-- `src/lib/store.ts`: Zustand store for application state
-- `src/lib/themeStore.ts`: Theme management with localStorage persistence
+- `src/services/healthDataParser.ts`: HealthKit XML parser for real health data
+- `src/services/realDataCircadian.ts`: Personal circadian analysis engine
+- `src/components/UltradianDashboard.tsx`: Main minimal dashboard component
+- `src/components/PredictiveAnalytics.tsx`: Data-rich prediction interface
+- `src/components/HealthDataImporter.tsx`: Health data import UI
 - `src/components/App.tsx`: Main application component with real-time updates
 
 ## Key Features
 
-### Rhythm Tracking
-- **Circadian Phases**: 24-hour daily cycle tracking with 6 distinct phases
-- **Ultradian Cycles**: 90-minute energy cycles with High/Low energy phases
-- **Real-time Updates**: Second-level precision timing throughout the application
-- **Visual Indicators**: Color-coded phases, progress bars, and countdown timers
+### Real Health Data Integration
+- **HealthKit XML Parser**: Processes 225K+ health records from Apple Health exports
+- **Personal Circadian Analysis**: Calculates individual wake/sleep times from actual data
+- **Heart Rate Integration**: Live heart rate monitoring with prediction adjustments
+- **Sleep Efficiency Analysis**: Real sleep quality metrics and recommendations
+- **Energy Peak Detection**: Identifies personal energy patterns from physiological data
 
-### Specialized Components
-- `UltradianZoomView`: Primary detailed 90-minute cycle visualization
-- `CircadianWave`: 24-hour overview with wave visualization
-- `PhaseGrid`: Phase information and timing displays
-- `RhythmTimeline`: Interactive timeline with real-time positioning
+### Minimal Dashboard UI
+- **UltradianDashboard**: Clean, focused view of current 90-minute cycle
+- **Live Countdown Timer**: MM:SS format with real-time seconds updates
+- **Energy Phase Indicators**: Color-coded High/Low/Transition states with intensity
+- **24-Hour Time Axis**: Wave visualization with actual clock times
+- **Confidence Scoring**: Live data reliability indicators
+
+### Predictive Analytics
+- **6-Hour Forecasting**: Upcoming energy peaks, troughs, and optimal windows
+- **Heart Rate Variance**: Real-time comparison with expected patterns
+- **Personal Insights**: Data-driven recommendations based on individual patterns
+- **2-Hour Energy Graph**: Visual timeline of predicted energy levels
 
 ### State Management
 - Global state managed through Zustand
 - Real-time clock updates via `setInterval` in main App component
-- Theme persistence via localStorage
-- Comprehensive type definitions in `src/lib/types.ts`
+- Health data analysis state for personalized rhythms
+- Simulated heart rate for demo when real data unavailable
 
 ## Technical Implementation
 
+### Health Data Processing
+- `src/services/healthDataParser.ts`: Parses HealthKit XML exports with comprehensive record types
+- `src/services/realDataCircadian.ts`: Analyzes personal patterns and generates predictions
+- Heart rate analysis with confidence scoring based on variance from expected patterns
+- Sleep pattern analysis from actual sleep/wake records over 30-day periods
+- Energy peak detection using heart rate data and plateau-aware algorithms
+
 ### Rhythm Calculations
-The core rhythm logic is implemented in:
-- `src/lib/circadian.ts`: Phase detection and timing calculations
-- `src/lib/ultradian.ts`: 90-minute cycle analysis
-- `src/lib/math.ts`: Mathematical utilities for wave calculations
-- `src/lib/phaseDetection.ts`: Advanced phase detection algorithms
+Real-time calculations with second-level precision:
+- Current ultradian cycle position (0-90 minutes) with energy phase detection
+- Personal wake/sleep time calculation from historical sleep data
+- Energy intensity modeling using sine wave patterns with real data adjustments
+- Predictive modeling for next 6 hours based on personal patterns
 
 ### UI Architecture
 - Component-based architecture with specialized rhythm tracking components
@@ -138,11 +156,12 @@ The core rhythm logic is implemented in:
 
 ## Current Focus Areas
 
-Based on the task files and recent development:
-1. **Ultradian Zoom View**: Enhanced 90-minute cycle visualization with detailed energy tracking
-2. **Menubar Integration**: Compact system tray interface for quick rhythm checking
-3. **Real-time Precision**: Second-level timing accuracy throughout the application
-4. **Visual Enhancements**: Sophisticated wave visualizations and progress indicators
+Latest implementation focuses on:
+1. **Real Health Data Integration**: Personal HealthKit data analysis for individualized rhythms
+2. **Minimal Dashboard Design**: Clean, focused UI prioritizing current ultradian cycle status
+3. **Predictive Analytics**: Data-driven forecasting with confidence scoring and recommendations
+4. **Live Data Synchronization**: Heart rate integration with real-time adjustments to predictions
+5. **Performance Optimization**: Efficient processing of large health datasets (225K+ records)
 
 ## Performance Considerations
 
