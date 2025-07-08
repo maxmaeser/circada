@@ -1,5 +1,6 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use serde::{Serialize, Deserialize};
+use tauri::{AppHandle, Manager};
 
 mod healthkit_ffi;
 
@@ -63,8 +64,26 @@ fn calculate_sleep_efficiency(activity_data: Vec<f64>, sleep_threshold: f64) -> 
     }
 }
 
+#[tauri::command]
+fn show_menubar_window(app: AppHandle) {
+    if let Some(window) = app.get_webview_window("menubar") {
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+}
+
+#[tauri::command]
+fn hide_menubar_window(app: AppHandle) {
+    if let Some(window) = app.get_webview_window("menubar") {
+        let _ = window.hide();
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    use tauri::menu::{Menu, MenuItem};
+    use tauri::tray::{TrayIcon, TrayIconBuilder};
+
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
@@ -75,8 +94,40 @@ pub fn run() {
             healthkit_ffi::start_healthkit_monitoring,
             healthkit_ffi::stop_healthkit_monitoring,
             healthkit_ffi::get_current_heart_rate,
-            healthkit_ffi::healthkit_is_available
+            healthkit_ffi::healthkit_is_available,
+            show_menubar_window,
+            hide_menubar_window
         ])
+        .setup(|app| {
+            let show_item = MenuItem::with_id(app, "show", "Show Dashboard", true, None::<&str>)?;
+            let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+            let menu = Menu::with_items(app, &[&show_item, &quit_item])?;
+
+            let _tray = TrayIconBuilder::new()
+                .icon(app.default_window_icon().unwrap().clone())
+                .menu(&menu)
+                .on_menu_event(|app, event| match event.id.as_ref() {
+                    "show" => {
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
+                    }
+                    "quit" => {
+                        app.exit(0);
+                    }
+                    _ => {}
+                })
+                .on_tray_icon_event(|_tray, event| {
+                    if let tauri::tray::TrayIconEvent::Click { .. } = event {
+                        // Toggle menubar window on tray click
+                        // This will be handled by the frontend
+                    }
+                })
+                .build(app)?;
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
