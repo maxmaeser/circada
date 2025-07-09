@@ -69,24 +69,29 @@ npm run preview
 - **Sleep Efficiency Analysis**: Real sleep quality metrics and recommendations
 - **Energy Peak Detection**: Identifies personal energy patterns from physiological data
 
-### Minimal Dashboard UI
-- **UltradianDashboard**: Clean, focused view of current 90-minute cycle
+### Enhanced Dashboard UI
+- **UltradianDashboard**: Clean, focused view of current 90-minute cycle with 6-phase system
 - **Live Countdown Timer**: MM:SS format with real-time seconds updates
-- **Energy Phase Indicators**: Color-coded High/Low/Transition states with intensity
-- **24-Hour Time Axis**: Wave visualization with actual clock times
+- **6-Phase Energy Icons**: ↗ Rising, ↑ Building, 🔥 Peak, ⚡ Flow, ↘ Winding, 😴 Rest
+- **Adaptive Icon Colors**: Icons automatically adjust color based on background brightness
+- **24-Hour Circadian Bar**: Beautiful gradient visualization of full daily energy cycle
 - **Live Data Indicators**: Visual indicators when real HealthKit data is streaming
 - **Confidence Scoring**: Live data reliability indicators based on heart rate variance
 
 ### Native Menubar Integration
 - **Live Menubar Timer**: Real-time countdown timer displayed in macOS menubar
-- **Phase Arrow Indicators**: Dynamic arrows showing current energy phase (↗ transition, → high energy, ↘ low energy)
+- **6-Phase Icon System**: Dynamic icons showing precise energy phase (↗↑🔥⚡↘😴)
 - **Synchronized Timing**: Menubar timer matches main app calculations exactly
 - **Native Text Display**: Clean text-only menubar item with no background or icons
 - **Automatic Updates**: Timer updates every second showing MM:SS format countdown
 - **Phase Transitions**: Seamless transitions between 90-minute ultradian cycle phases
 
-### Predictive Analytics
-- **6-Hour Forecasting**: Upcoming energy peaks, troughs, and optimal windows
+### Predictive Analytics & Recommendations
+- **6-Hour Forecasting**: Upcoming energy phases with specific activity suggestions
+- **Phase-Specific Guidance**: Actionable advice for each energy state
+- **Visual Predictions**: Color-coded icons showing future energy levels
+- **Activity Optimization**: Specific work types recommended for each phase
+- **Smart Scheduling**: Plan tasks around natural energy rhythms
 - **Heart Rate Variance**: Real-time comparison with expected patterns
 - **Personal Insights**: Data-driven recommendations based on individual patterns
 - **2-Hour Energy Graph**: Visual timeline of predicted energy levels
@@ -194,11 +199,41 @@ Real-time calculations with second-level precision:
 
 Latest implementation focuses on:
 1. **Live HealthKit Integration**: Real-time heart rate streaming with Swift FFI bridge
-2. **Dynamic Cycle Adjustments**: Live modifications to ultradian cycles based on physiological data
-3. **Minimal Dashboard Design**: Clean, focused UI prioritizing current ultradian cycle status
-4. **Predictive Analytics**: Data-driven forecasting with confidence scoring and recommendations
-5. **Native Menubar Timer**: Real-time countdown timer with phase arrows in macOS menubar
+2. **Enhanced UI Systems**: 6-phase icon system with adaptive coloring and circadian visualization
+3. **Predictive Interface**: Phase-specific recommendations and 6-hour forecasting
+4. **Native Menubar Timer**: Real-time countdown timer with phase arrows in macOS menubar
+5. **macOS Widget Development**: Planning desktop widget based on first dashboard card
 6. **Performance Optimization**: Efficient processing of large health datasets (225K+ records)
+
+## Upcoming: macOS Widget Development
+
+### Widget Vision
+Transform the first dashboard card (Energy Phase indicator) into a native macOS desktop widget:
+
+**Core Features:**
+- **Phase Icon Display**: Large, clear 6-phase icon (↗↑🔥⚡↘😴)
+- **Energy Ring**: Circular progress indicator showing cycle position
+- **Time Remaining**: MM:SS countdown to next phase
+- **Phase Label**: Current energy state (Rising, Peak, Flow, etc.)
+- **Adaptive Colors**: Dynamic background based on current energy phase
+
+**Technical Approach:**
+- **SwiftUI Widget**: Native macOS widget using WidgetKit
+- **Tauri Integration**: Swift commands to fetch current cycle data
+- **Real-time Updates**: Timeline-based widget updates every 30 seconds
+- **Multiple Sizes**: Small (icon + time), Medium (full details), Large (with predictions)
+
+**Widget Layout (Medium):**
+```
+┌─────────────────────────┐
+│  🔥    Peak Energy      │
+│                         │
+│      [Energy Ring]      │
+│                         │
+│      23:45 remaining    │
+│  Complex projects time  │
+└─────────────────────────┘
+```
 
 ## Performance Considerations
 
