@@ -1,0 +1,884 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FA00F9332E1E797D008F469C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA291AE02E1E76A5004FE133 /* WidgetKit.framework */; };
+		FA00F9342E1E797D008F469C /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA291AE22E1E76A5004FE133 /* SwiftUI.framework */; };
+		FA00F9422E1E797E008F469C /* CircadianWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FA00F9322E1E797D008F469C /* CircadianWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FA291AE12E1E76A5004FE133 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA291AE02E1E76A5004FE133 /* WidgetKit.framework */; };
+		FA291AE32E1E76A5004FE133 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA291AE22E1E76A5004FE133 /* SwiftUI.framework */; };
+		FA291AF12E1E76A6004FE133 /* CircadianWidgetHostExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FA291ADE2E1E76A5004FE133 /* CircadianWidgetHostExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FA00F9402E1E797E008F469C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA291AA72E1E765B004FE133 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FA00F9312E1E797D008F469C;
+			remoteInfo = CircadianWidgetExtension;
+		};
+		FA291ABE2E1E765C004FE133 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA291AA72E1E765B004FE133 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FA291AAE2E1E765B004FE133;
+			remoteInfo = CricadianWidgetHost;
+		};
+		FA291AC82E1E765C004FE133 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA291AA72E1E765B004FE133 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FA291AAE2E1E765B004FE133;
+			remoteInfo = CricadianWidgetHost;
+		};
+		FA291AEF2E1E76A6004FE133 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA291AA72E1E765B004FE133 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FA291ADD2E1E76A5004FE133;
+			remoteInfo = CircadianWidgetHostExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FA291AF62E1E76A6004FE133 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				FA291AF12E1E76A6004FE133 /* CircadianWidgetHostExtension.appex in Embed Foundation Extensions */,
+				FA00F9422E1E797E008F469C /* CircadianWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		FA00F9322E1E797D008F469C /* CircadianWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CircadianWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA291AAF2E1E765B004FE133 /* CricadianWidgetHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CricadianWidgetHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA291ABD2E1E765C004FE133 /* CricadianWidgetHostTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CricadianWidgetHostTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA291AC72E1E765C004FE133 /* CricadianWidgetHostUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CricadianWidgetHostUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA291ADE2E1E76A5004FE133 /* CircadianWidgetHostExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CircadianWidgetHostExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA291AE02E1E76A5004FE133 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		FA291AE22E1E76A5004FE133 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FA00F9452E1E797E008F469C /* Exceptions for "CircadianWidget" folder in "CircadianWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FA00F9312E1E797D008F469C /* CircadianWidgetExtension */;
+		};
+		FA291AF22E1E76A6004FE133 /* Exceptions for "CircadianWidgetHost" folder in "CircadianWidgetHostExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FA291ADD2E1E76A5004FE133 /* CircadianWidgetHostExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		FA00F9352E1E797D008F469C /* CircadianWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FA00F9452E1E797E008F469C /* Exceptions for "CircadianWidget" folder in "CircadianWidgetExtension" target */,
+			);
+			path = CircadianWidget;
+			sourceTree = "<group>";
+		};
+		FA291AB12E1E765B004FE133 /* CricadianWidgetHost */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CricadianWidgetHost;
+			sourceTree = "<group>";
+		};
+		FA291AC02E1E765C004FE133 /* CricadianWidgetHostTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CricadianWidgetHostTests;
+			sourceTree = "<group>";
+		};
+		FA291ACA2E1E765C004FE133 /* CricadianWidgetHostUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CricadianWidgetHostUITests;
+			sourceTree = "<group>";
+		};
+		FA291AE42E1E76A5004FE133 /* CircadianWidgetHost */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FA291AF22E1E76A6004FE133 /* Exceptions for "CircadianWidgetHost" folder in "CircadianWidgetHostExtension" target */,
+			);
+			path = CircadianWidgetHost;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FA00F92F2E1E797D008F469C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA00F9342E1E797D008F469C /* SwiftUI.framework in Frameworks */,
+				FA00F9332E1E797D008F469C /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA291AAC2E1E765B004FE133 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA291ABA2E1E765C004FE133 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA291AC42E1E765C004FE133 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA291ADB2E1E76A5004FE133 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA291AE32E1E76A5004FE133 /* SwiftUI.framework in Frameworks */,
+				FA291AE12E1E76A5004FE133 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FA291AA62E1E765B004FE133 = {
+			isa = PBXGroup;
+			children = (
+				FA291AB12E1E765B004FE133 /* CricadianWidgetHost */,
+				FA291AC02E1E765C004FE133 /* CricadianWidgetHostTests */,
+				FA291ACA2E1E765C004FE133 /* CricadianWidgetHostUITests */,
+				FA291AE42E1E76A5004FE133 /* CircadianWidgetHost */,
+				FA00F9352E1E797D008F469C /* CircadianWidget */,
+				FA291ADF2E1E76A5004FE133 /* Frameworks */,
+				FA291AB02E1E765B004FE133 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FA291AB02E1E765B004FE133 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA291AAF2E1E765B004FE133 /* CricadianWidgetHost.app */,
+				FA291ABD2E1E765C004FE133 /* CricadianWidgetHostTests.xctest */,
+				FA291AC72E1E765C004FE133 /* CricadianWidgetHostUITests.xctest */,
+				FA291ADE2E1E76A5004FE133 /* CircadianWidgetHostExtension.appex */,
+				FA00F9322E1E797D008F469C /* CircadianWidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FA291ADF2E1E76A5004FE133 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FA291AE02E1E76A5004FE133 /* WidgetKit.framework */,
+				FA291AE22E1E76A5004FE133 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FA00F9312E1E797D008F469C /* CircadianWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA00F9462E1E797E008F469C /* Build configuration list for PBXNativeTarget "CircadianWidgetExtension" */;
+			buildPhases = (
+				FA00F92E2E1E797D008F469C /* Sources */,
+				FA00F92F2E1E797D008F469C /* Frameworks */,
+				FA00F9302E1E797D008F469C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FA00F9352E1E797D008F469C /* CircadianWidget */,
+			);
+			name = CircadianWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = CircadianWidgetExtension;
+			productReference = FA00F9322E1E797D008F469C /* CircadianWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		FA291AAE2E1E765B004FE133 /* CricadianWidgetHost */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA291AD12E1E765C004FE133 /* Build configuration list for PBXNativeTarget "CricadianWidgetHost" */;
+			buildPhases = (
+				FA291AAB2E1E765B004FE133 /* Sources */,
+				FA291AAC2E1E765B004FE133 /* Frameworks */,
+				FA291AAD2E1E765B004FE133 /* Resources */,
+				FA291AF62E1E76A6004FE133 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FA291AF02E1E76A6004FE133 /* PBXTargetDependency */,
+				FA00F9412E1E797E008F469C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FA291AB12E1E765B004FE133 /* CricadianWidgetHost */,
+			);
+			name = CricadianWidgetHost;
+			packageProductDependencies = (
+			);
+			productName = CricadianWidgetHost;
+			productReference = FA291AAF2E1E765B004FE133 /* CricadianWidgetHost.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FA291ABC2E1E765C004FE133 /* CricadianWidgetHostTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA291AD42E1E765C004FE133 /* Build configuration list for PBXNativeTarget "CricadianWidgetHostTests" */;
+			buildPhases = (
+				FA291AB92E1E765C004FE133 /* Sources */,
+				FA291ABA2E1E765C004FE133 /* Frameworks */,
+				FA291ABB2E1E765C004FE133 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FA291ABF2E1E765C004FE133 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FA291AC02E1E765C004FE133 /* CricadianWidgetHostTests */,
+			);
+			name = CricadianWidgetHostTests;
+			packageProductDependencies = (
+			);
+			productName = CricadianWidgetHostTests;
+			productReference = FA291ABD2E1E765C004FE133 /* CricadianWidgetHostTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		FA291AC62E1E765C004FE133 /* CricadianWidgetHostUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA291AD72E1E765C004FE133 /* Build configuration list for PBXNativeTarget "CricadianWidgetHostUITests" */;
+			buildPhases = (
+				FA291AC32E1E765C004FE133 /* Sources */,
+				FA291AC42E1E765C004FE133 /* Frameworks */,
+				FA291AC52E1E765C004FE133 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FA291AC92E1E765C004FE133 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FA291ACA2E1E765C004FE133 /* CricadianWidgetHostUITests */,
+			);
+			name = CricadianWidgetHostUITests;
+			packageProductDependencies = (
+			);
+			productName = CricadianWidgetHostUITests;
+			productReference = FA291AC72E1E765C004FE133 /* CricadianWidgetHostUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		FA291ADD2E1E76A5004FE133 /* CircadianWidgetHostExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA291AF32E1E76A6004FE133 /* Build configuration list for PBXNativeTarget "CircadianWidgetHostExtension" */;
+			buildPhases = (
+				FA291ADA2E1E76A5004FE133 /* Sources */,
+				FA291ADB2E1E76A5004FE133 /* Frameworks */,
+				FA291ADC2E1E76A5004FE133 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FA291AE42E1E76A5004FE133 /* CircadianWidgetHost */,
+			);
+			name = CircadianWidgetHostExtension;
+			packageProductDependencies = (
+			);
+			productName = CircadianWidgetHostExtension;
+			productReference = FA291ADE2E1E76A5004FE133 /* CircadianWidgetHostExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FA291AA72E1E765B004FE133 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					FA00F9312E1E797D008F469C = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					FA291AAE2E1E765B004FE133 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					FA291ABC2E1E765C004FE133 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = FA291AAE2E1E765B004FE133;
+					};
+					FA291AC62E1E765C004FE133 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = FA291AAE2E1E765B004FE133;
+					};
+					FA291ADD2E1E76A5004FE133 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+				};
+			};
+			buildConfigurationList = FA291AAA2E1E765B004FE133 /* Build configuration list for PBXProject "CricadianWidgetHost" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = FA291AA62E1E765B004FE133;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = FA291AB02E1E765B004FE133 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FA291AAE2E1E765B004FE133 /* CricadianWidgetHost */,
+				FA291ABC2E1E765C004FE133 /* CricadianWidgetHostTests */,
+				FA291AC62E1E765C004FE133 /* CricadianWidgetHostUITests */,
+				FA291ADD2E1E76A5004FE133 /* CircadianWidgetHostExtension */,
+				FA00F9312E1E797D008F469C /* CircadianWidgetExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FA00F9302E1E797D008F469C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA291AAD2E1E765B004FE133 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA291ABB2E1E765C004FE133 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA291AC52E1E765C004FE133 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA291ADC2E1E76A5004FE133 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FA00F92E2E1E797D008F469C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA291AAB2E1E765B004FE133 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA291AB92E1E765C004FE133 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA291AC32E1E765C004FE133 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA291ADA2E1E76A5004FE133 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FA00F9412E1E797E008F469C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FA00F9312E1E797D008F469C /* CircadianWidgetExtension */;
+			targetProxy = FA00F9402E1E797E008F469C /* PBXContainerItemProxy */;
+		};
+		FA291ABF2E1E765C004FE133 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FA291AAE2E1E765B004FE133 /* CricadianWidgetHost */;
+			targetProxy = FA291ABE2E1E765C004FE133 /* PBXContainerItemProxy */;
+		};
+		FA291AC92E1E765C004FE133 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FA291AAE2E1E765B004FE133 /* CricadianWidgetHost */;
+			targetProxy = FA291AC82E1E765C004FE133 /* PBXContainerItemProxy */;
+		};
+		FA291AF02E1E76A6004FE133 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FA291ADD2E1E76A5004FE133 /* CircadianWidgetHostExtension */;
+			targetProxy = FA291AEF2E1E76A6004FE133 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		FA00F9432E1E797E008F469C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = CircadianWidget/CircadianWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A89CL99NVP;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CircadianWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CircadianWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.max.circadahost.CircadianWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		FA00F9442E1E797E008F469C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = CircadianWidget/CircadianWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A89CL99NVP;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CircadianWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CircadianWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.max.circadahost.CircadianWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		FA291ACF2E1E765C004FE133 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		FA291AD02E1E765C004FE133 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		FA291AD22E1E765C004FE133 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CricadianWidgetHost/CricadianWidgetHost.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A89CL99NVP;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.max.circadahost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		FA291AD32E1E765C004FE133 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CricadianWidgetHost/CricadianWidgetHost.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A89CL99NVP;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.max.circadahost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		FA291AD52E1E765C004FE133 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A89CL99NVP;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.CricadianWidgetHostTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CricadianWidgetHost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CricadianWidgetHost";
+			};
+			name = Debug;
+		};
+		FA291AD62E1E765C004FE133 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A89CL99NVP;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.CricadianWidgetHostTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CricadianWidgetHost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CricadianWidgetHost";
+			};
+			name = Release;
+		};
+		FA291AD82E1E765C004FE133 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.CricadianWidgetHostUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = CricadianWidgetHost;
+			};
+			name = Debug;
+		};
+		FA291AD92E1E765C004FE133 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.CricadianWidgetHostUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = CricadianWidgetHost;
+			};
+			name = Release;
+		};
+		FA291AF42E1E76A6004FE133 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = CircadianWidgetHost/CircadianWidgetHost.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A89CL99NVP;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CircadianWidgetHost/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CircadianWidgetHost;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.max.circadahost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		FA291AF52E1E76A6004FE133 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = CircadianWidgetHost/CircadianWidgetHost.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A89CL99NVP;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CircadianWidgetHost/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CircadianWidgetHost;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.max.circadahost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FA00F9462E1E797E008F469C /* Build configuration list for PBXNativeTarget "CircadianWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA00F9432E1E797E008F469C /* Debug */,
+				FA00F9442E1E797E008F469C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA291AAA2E1E765B004FE133 /* Build configuration list for PBXProject "CricadianWidgetHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA291ACF2E1E765C004FE133 /* Debug */,
+				FA291AD02E1E765C004FE133 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA291AD12E1E765C004FE133 /* Build configuration list for PBXNativeTarget "CricadianWidgetHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA291AD22E1E765C004FE133 /* Debug */,
+				FA291AD32E1E765C004FE133 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA291AD42E1E765C004FE133 /* Build configuration list for PBXNativeTarget "CricadianWidgetHostTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA291AD52E1E765C004FE133 /* Debug */,
+				FA291AD62E1E765C004FE133 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA291AD72E1E765C004FE133 /* Build configuration list for PBXNativeTarget "CricadianWidgetHostUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA291AD82E1E765C004FE133 /* Debug */,
+				FA291AD92E1E765C004FE133 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA291AF32E1E76A6004FE133 /* Build configuration list for PBXNativeTarget "CircadianWidgetHostExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA291AF42E1E76A6004FE133 /* Debug */,
+				FA291AF52E1E76A6004FE133 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FA291AA72E1E765B004FE133 /* Project object */;
+}
