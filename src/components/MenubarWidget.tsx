@@ -14,37 +14,53 @@ export function MenubarWidget({ currentTime }: MenubarWidgetProps) {
   useEffect(() => {
     if (!currentTime) return;
 
-    // Calculate current position in 90-minute ultradian cycle
-    const totalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
-    const cyclePosition = totalMinutes % 90; // 0-89 minutes in current cycle
+    // Use same calculation as main app: include seconds for precision
+    const totalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes() + currentTime.getSeconds() / 60;
+    const cyclePosition = totalMinutes % 90; // 0-90 minutes in current cycle
     
-    // Calculate time left in current cycle
-    const minutesLeft = 89 - cyclePosition;
-    const secondsLeft = 60 - currentTime.getSeconds();
+    // Determine energy phase (matching main app logic)
+    let energyPhase: 'high' | 'low' | 'transition' = 'high';
+    
+    if (cyclePosition <= 5) {
+      energyPhase = 'transition';
+    } else if (cyclePosition <= 60) {
+      energyPhase = 'high';
+    } else if (cyclePosition <= 65) {
+      energyPhase = 'transition';
+    } else {
+      energyPhase = 'low';
+    }
+    
+    // Calculate time remaining using same logic as main app
+    const timeRemaining = energyPhase === 'high' || (energyPhase === 'transition' && cyclePosition <= 60) 
+      ? 60 - cyclePosition 
+      : 90 - cyclePosition;
+    
+    const minutesLeft = Math.floor(timeRemaining);
+    const secondsLeft = Math.floor((timeRemaining - minutesLeft) * 60);
     
     setTimeLeft({
-      minutes: secondsLeft === 60 ? minutesLeft : minutesLeft - 1,
-      seconds: secondsLeft === 60 ? 0 : secondsLeft
+      minutes: minutesLeft,
+      seconds: secondsLeft
     });
 
     // Determine phase arrow based on position in cycle
-    // 0-30min: Rising energy ↗
-    // 30-60min: Peak energy →  
-    // 60-90min: Declining energy ↘
-    if (cyclePosition < 30) {
-      setPhaseArrow('↗');
-    } else if (cyclePosition < 60) {
-      setPhaseArrow('→');
+    if (cyclePosition <= 5) {
+      setPhaseArrow('↗'); // Transition/Rising
+    } else if (cyclePosition <= 60) {
+      setPhaseArrow('→'); // High energy
     } else {
-      setPhaseArrow('↘');
+      setPhaseArrow('↘'); // Low energy
     }
+    
+    console.log('MenubarWidget update:', { cyclePosition, energyPhase, timeRemaining, timeLeft });
   }, [currentTime]);
 
-  // Ultra-minimal styling for menubar
+  // Minimal text-only styling for menubar
   return (
-    <div className="flex items-center gap-1 px-2 py-1 text-sm font-mono text-white bg-black/80 rounded h-full">
-      <span className="text-base">{phaseArrow}</span>
-      <span className="tabular-nums">
+    <div className="flex items-center gap-1 px-1 py-0 text-xs font-mono text-white h-full w-full">
+      <span className="text-sm font-bold">{phaseArrow}</span>
+      <span className="tabular-nums text-xs">
         {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
       </span>
     </div>
@@ -56,6 +72,7 @@ export default function MenubarStandalone() {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
+    console.log('MenubarStandalone mounted');
     // Update every second for countdown precision
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -64,5 +81,6 @@ export default function MenubarStandalone() {
     return () => clearInterval(timer);
   }, []);
 
+  console.log('MenubarStandalone rendering with time:', currentTime);
   return <MenubarWidget currentTime={currentTime} />;
 }

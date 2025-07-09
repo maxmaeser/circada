@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useAppStore } from "@/lib/store"
 import { liveHealthKit, LiveCycleAdjustment } from "@/services/liveHealthKit"
+import { trayUpdater } from "@/services/trayUpdater"
 import UltradianDashboard from "@/components/UltradianDashboard"
 import PredictiveAnalytics from "@/components/PredictiveAnalytics"
 // import HealthDataImporter from "@/components/HealthDataImporter"
@@ -55,6 +56,9 @@ export default function App() {
     
     initLiveHealthKit();
     
+    // Start tray updater
+    trayUpdater.start();
+    
     const timer = setInterval(() => {
       const now = new Date()
       setCurrentTime(now)
@@ -71,7 +75,10 @@ export default function App() {
         setHeartRate(Math.round(baseHR + cycleIntensity * 20 + variation));
       }
     }, 1000)
-    return () => clearInterval(timer)
+    return () => {
+      clearInterval(timer);
+      trayUpdater.stop();
+    };
   }, [setCurrentTime, isLiveHealthKit, liveAdjustment])
 
   // const handleHealthDataLoaded = (analysis: any) => {

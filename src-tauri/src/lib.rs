@@ -79,10 +79,17 @@ fn hide_menubar_window(app: AppHandle) {
     }
 }
 
+#[tauri::command]
+fn update_tray_title(app: AppHandle, title: String) {
+    if let Some(tray) = app.tray_by_id("main") {
+        let _ = tray.set_title(Some(title));
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     use tauri::menu::{Menu, MenuItem};
-    use tauri::tray::{TrayIcon, TrayIconBuilder};
+    use tauri::tray::TrayIconBuilder;
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
@@ -96,15 +103,15 @@ pub fn run() {
             healthkit_ffi::get_current_heart_rate,
             healthkit_ffi::healthkit_is_available,
             show_menubar_window,
-            hide_menubar_window
+            hide_menubar_window,
+            update_tray_title
         ])
         .setup(|app| {
             let show_item = MenuItem::with_id(app, "show", "Show Dashboard", true, None::<&str>)?;
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&show_item, &quit_item])?;
 
-            let _tray = TrayIconBuilder::new()
-                .icon(app.default_window_icon().unwrap().clone())
+            let _tray = TrayIconBuilder::with_id("main")
                 .menu(&menu)
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "show" => {
@@ -120,8 +127,13 @@ pub fn run() {
                 })
                 .on_tray_icon_event(|_tray, event| {
                     if let tauri::tray::TrayIconEvent::Click { .. } = event {
-                        // Toggle menubar window on tray click
-                        // This will be handled by the frontend
+                        println!("Tray icon clicked!");
+                        // Just show the main window instead of menubar window
+                        let app = _tray.app_handle();
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
                     }
                 })
                 .build(app)?;

@@ -19,25 +19,10 @@
         "fullscreen": false,
         "visible": true,
         "label": "main"
-      },
-      {
-        "width": 300,
-        "height": 40,
-        "decorations": false,
-        "url": "menubar.html",
-        "label": "menubar",
-        "visible": false,
-        "alwaysOnTop": true,
-        "skipTaskbar": true
       }
     ],
     "security": {
       "csp": null
-    },
-    "trayIcon": {
-      "iconPath": "icons/icon.png",
-      "iconAsTemplate": true,
-      "menuOnLeftClick": false
     }
   },
   "bundle": {
