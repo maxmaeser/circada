@@ -114,10 +114,37 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
     return `hsl(${170}, 70%, ${40 + intensity * 20}%)`;
   };
 
+  const getColorLightness = (phase: string, intensity: number) => {
+    // Extract lightness percentage from HSL color
+    if (phase === 'high') return 50 + intensity * 20; // 50-70%
+    if (phase === 'low') return 30 + intensity * 30; // 30-60%
+    return 40 + intensity * 20; // 40-60%
+  };
+
   const getPhaseIcon = (phase: string) => {
-    if (phase === 'high') return <TrendingUp className="w-5 h-5" />;
-    if (phase === 'low') return <TrendingDown className="w-5 h-5" />;
-    return <Activity className="w-5 h-5" />;
+    // Get current cycle position for 6-phase icon system
+    const totalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes() + currentTime.getSeconds() / 60;
+    const cyclePosition = totalMinutes % 90;
+    
+    // Check if background is bright (lightness > 55%)
+    const lightness = getColorLightness(cycleState.energyPhase, cycleState.energyIntensity);
+    const isDarkIcon = lightness > 55;
+    const iconColor = isDarkIcon ? 'text-gray-800' : 'text-white';
+    
+    // Return icon based on 6-phase system with adaptive coloring
+    if (cyclePosition <= 15) {
+      return <span className={`text-xl font-bold ${iconColor} drop-shadow-sm`}>↗</span>; // Rising (0-15 min) - Building energy
+    } else if (cyclePosition <= 30) {
+      return <span className={`text-xl font-bold ${iconColor} drop-shadow-sm`}>↑</span>; // Climbing (15-30 min) - Strong ascent
+    } else if (cyclePosition <= 45) {
+      return <span className="text-xl drop-shadow-sm">🔥</span>; // Peak (30-45 min) - Maximum energy
+    } else if (cyclePosition <= 60) {
+      return <span className="text-xl drop-shadow-sm">⚡</span>; // Flow (45-60 min) - Optimal performance
+    } else if (cyclePosition <= 75) {
+      return <span className={`text-xl font-bold ${iconColor} drop-shadow-sm`}>↘</span>; // Declining (60-75 min) - Energy decreasing
+    } else {
+      return <span className="text-xl drop-shadow-sm">😴</span>; // Resting (75-90 min) - Recovery phase
+    }
   };
 
   const getRecommendation = (phase: string, intensity: number) => {
@@ -125,6 +152,71 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
     if (phase === 'high') return 'Good for: Problem solving, learning';
     if (phase === 'low') return 'Best for: Rest, light tasks, reflection';
     return 'Transition period: Prepare for next phase';
+  };
+
+  const get6HourPredictions = () => {
+    const predictions = [];
+    const now = new Date();
+    
+    // Generate predictions for next 6 hours
+    for (let hour = 1; hour <= 6; hour++) {
+      const futureTime = new Date(now.getTime() + hour * 60 * 60 * 1000);
+      const totalMinutes = futureTime.getHours() * 60 + futureTime.getMinutes();
+      const cyclePosition = totalMinutes % 90;
+      
+      let phase = 'high';
+      let intensity = 0.8;
+      
+      if (cyclePosition <= 5) {
+        phase = 'transition';
+        intensity = 0.4 + (cyclePosition / 5) * 0.4;
+      } else if (cyclePosition <= 60) {
+        phase = 'high';
+        const progress = (cyclePosition - 5) / 55;
+        intensity = 0.5 + 0.4 * Math.sin(progress * Math.PI);
+      } else if (cyclePosition <= 65) {
+        phase = 'transition';
+        intensity = 0.8 - ((cyclePosition - 60) / 5) * 0.4;
+      } else {
+        phase = 'low';
+        intensity = 0.2 + 0.2 * Math.sin((cyclePosition - 65) / 25 * Math.PI);
+      }
+      
+      // Get phase icon
+      let icon = '↗';
+      if (cyclePosition <= 15) {
+        icon = '↗';
+      } else if (cyclePosition <= 30) {
+        icon = '↑';
+      } else if (cyclePosition <= 45) {
+        icon = '🔥';
+      } else if (cyclePosition <= 60) {
+        icon = '⚡';
+      } else if (cyclePosition <= 75) {
+        icon = '↘';
+      } else {
+        icon = '😴';
+      }
+      
+      // Get more specific description based on icon
+      let description = '';
+      if (icon === '↗') description = 'Rising Energy';
+      else if (icon === '↑') description = 'Building Energy';
+      else if (icon === '🔥') description = 'Peak Energy';
+      else if (icon === '⚡') description = 'Peak Flow';
+      else if (icon === '↘') description = 'Winding Down';
+      else if (icon === '😴') description = 'Rest Phase';
+      
+      predictions.push({
+        time: futureTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        phase,
+        intensity,
+        icon,
+        description
+      });
+    }
+    
+    return predictions;
   };
 
   return (
@@ -262,13 +354,120 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
             </svg>
           </div>
 
-          {/* Recommendation */}
-          <div className="text-center p-4 bg-zinc-800/50 rounded-lg">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Zap className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm font-medium !text-white">Recommendation</span>
+          {/* Recommendation & 6-Hour Predictions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* Recommendation */}
+            <div className="p-4 bg-zinc-800/50 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="w-4 h-4 text-yellow-400" />
+                <span className="text-sm font-medium !text-white">Recommendation</span>
+              </div>
+              <p className="text-sm !text-zinc-300">{getRecommendation(cycleState.energyPhase, cycleState.energyIntensity)}</p>
             </div>
-            <p className="text-sm !text-zinc-300">{getRecommendation(cycleState.energyPhase, cycleState.energyIntensity)}</p>
+            
+            {/* 6-Hour Predictions */}
+            <div className="space-y-3">
+              {get6HourPredictions().slice(0, 2).map((prediction, index) => (
+                <div key={index} className="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-lg">
+                  <div className="flex-shrink-0">
+                    <div 
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm"
+                      style={{ backgroundColor: getEnergyColor(prediction.phase, prediction.intensity) }}
+                    >
+                      {prediction.icon}
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium !text-white">{prediction.time}</span>
+                      <span className="text-xs !text-zinc-400">{prediction.description}</span>
+                    </div>
+                    <div className="text-xs !text-zinc-500 mt-1">
+                      {prediction.icon === '↗' ? 'Warm up: Light tasks, planning, prepare for focus' :
+                       prediction.icon === '↑' ? 'Building momentum: Start challenging work' :
+                       prediction.icon === '🔥' ? 'Peak time: Complex projects, creative work' :
+                       prediction.icon === '⚡' ? 'Prime focus: Deep work, important decisions' :
+                       prediction.icon === '↘' ? 'Wind down: Finish tasks, review, organize' :
+                       prediction.icon === '😴' ? 'Rest time: Breaks, reflection, light admin' :
+                       'Energy transition period'}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Circadian Rhythm Bar */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold !text-white">Circadian Rhythm</h3>
+                <p className="text-sm !text-zinc-400">24-hour energy cycle</p>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-mono !text-white">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                <div className="text-xs !text-zinc-400">Current time</div>
+              </div>
+            </div>
+            
+            <div className="relative h-16 bg-zinc-900 rounded-lg overflow-hidden">
+              {/* 24-hour gradient background */}
+              <div 
+                className="absolute inset-0 w-full h-full"
+                style={{
+                  background: `linear-gradient(to right, 
+                    #1e3a8a 0%,    /* Deep blue - midnight */
+                    #312e81 8%,    /* Purple - early morning */
+                    #7c3aed 16%,   /* Purple - dawn */
+                    #f59e0b 25%,   /* Orange - sunrise */
+                    #fbbf24 33%,   /* Yellow - morning */
+                    #84cc16 41%,   /* Green - late morning */
+                    #22d3ee 50%,   /* Cyan - noon */
+                    #84cc16 58%,   /* Green - afternoon */
+                    #fbbf24 66%,   /* Yellow - late afternoon */
+                    #f59e0b 75%,   /* Orange - sunset */
+                    #7c3aed 83%,   /* Purple - twilight */
+                    #312e81 91%,   /* Purple - evening */
+                    #1e3a8a 100%   /* Deep blue - night */
+                  )`
+                }}
+              />
+              
+              {/* Hour markers */}
+              {Array.from({ length: 24 }, (_, i) => {
+                const x = (i / 24) * 100;
+                const hour = i;
+                const isCurrentHour = hour === currentTime.getHours();
+                
+                return (
+                  <div key={i} className="absolute top-0 bottom-0 flex flex-col justify-between" style={{ left: `${x}%` }}>
+                    <div className="w-px h-full bg-white/20" />
+                    <div className="absolute -bottom-6 left-0 transform -translate-x-1/2">
+                      <span className={`text-xs font-mono ${isCurrentHour ? 'text-white font-bold' : 'text-zinc-400'}`}>
+                        {String(hour).padStart(2, '0')}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+              
+              {/* Current time indicator */}
+              <div 
+                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg"
+                style={{ 
+                  left: `${((currentTime.getHours() * 60 + currentTime.getMinutes()) / (24 * 60)) * 100}%`
+                }}
+              >
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-white rounded-full shadow-lg animate-pulse" />
+              </div>
+              
+              {/* Phase labels */}
+              <div className="absolute bottom-1 left-2 text-xs font-medium text-white/80">Night</div>
+              <div className="absolute bottom-1 left-1/4 text-xs font-medium text-white/80">Morning</div>
+              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-medium text-white/80">Noon</div>
+              <div className="absolute bottom-1 right-1/4 text-xs font-medium text-white/80">Evening</div>
+              <div className="absolute bottom-1 right-2 text-xs font-medium text-white/80">Night</div>
+            </div>
           </div>
         </CardContent>
       </Card>

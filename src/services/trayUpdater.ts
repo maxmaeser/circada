@@ -48,14 +48,20 @@ export class TrayUpdater {
     const minutesLeft = Math.floor(timeRemaining);
     const secondsLeft = Math.floor((timeRemaining - minutesLeft) * 60);
     
-    // Determine phase arrow
-    let phaseArrow = '→';
-    if (cyclePosition <= 5) {
-      phaseArrow = '↗';
+    // Determine phase icon (6-phase system)
+    let phaseArrow = '↗';
+    if (cyclePosition <= 15) {
+      phaseArrow = '↗'; // Rising (0-15 min) - Building energy
+    } else if (cyclePosition <= 30) {
+      phaseArrow = '↑'; // Climbing (15-30 min) - Strong ascent
+    } else if (cyclePosition <= 45) {
+      phaseArrow = '🔥'; // Peak (30-45 min) - Maximum energy
     } else if (cyclePosition <= 60) {
-      phaseArrow = '→';
+      phaseArrow = '⚡'; // Flow (45-60 min) - Optimal performance
+    } else if (cyclePosition <= 75) {
+      phaseArrow = '↘'; // Declining (60-75 min) - Energy decreasing
     } else {
-      phaseArrow = '↘';
+      phaseArrow = '😴'; // Resting (75-90 min) - Recovery phase
     }
     
     // Format title

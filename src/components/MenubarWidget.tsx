@@ -44,13 +44,19 @@ export function MenubarWidget({ currentTime }: MenubarWidgetProps) {
       seconds: secondsLeft
     });
 
-    // Determine phase arrow based on position in cycle
-    if (cyclePosition <= 5) {
-      setPhaseArrow('↗'); // Transition/Rising
+    // Determine phase icon based on position in cycle (6-phase system)
+    if (cyclePosition <= 15) {
+      setPhaseArrow('↗'); // Rising (0-15 min) - Building energy
+    } else if (cyclePosition <= 30) {
+      setPhaseArrow('↑'); // Climbing (15-30 min) - Strong ascent
+    } else if (cyclePosition <= 45) {
+      setPhaseArrow('🔥'); // Peak (30-45 min) - Maximum energy
     } else if (cyclePosition <= 60) {
-      setPhaseArrow('→'); // High energy
+      setPhaseArrow('⚡'); // Flow (45-60 min) - Optimal performance
+    } else if (cyclePosition <= 75) {
+      setPhaseArrow('↘'); // Declining (60-75 min) - Energy decreasing
     } else {
-      setPhaseArrow('↘'); // Low energy
+      setPhaseArrow('😴'); // Resting (75-90 min) - Recovery phase
     }
     
     console.log('MenubarWidget update:', { cyclePosition, energyPhase, timeRemaining, timeLeft });
