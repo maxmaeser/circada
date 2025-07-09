@@ -51,9 +51,10 @@ npm run preview
 - `src/services/liveHealthKit.ts`: TypeScript live data service with cycle adjustment algorithms
 - `src/services/healthDataParser.ts`: HealthKit XML parser for historical health data analysis
 - `src/services/realDataCircadian.ts`: Personal circadian analysis engine
+- `src/services/trayUpdater.ts`: Real-time menubar tray icon updater service
 - `src/components/UltradianDashboard.tsx`: Main minimal dashboard component
 - `src/components/PredictiveAnalytics.tsx`: Data-rich prediction interface with 6-hour forecasting
-- `src/components/MenubarWidget.tsx`: High-performance system tray widget
+- `src/components/MenubarWidget.tsx`: High-performance system tray widget (legacy)
 - `src/components/App.tsx`: Main application component with live HealthKit integration
 
 ## Key Features
@@ -75,6 +76,14 @@ npm run preview
 - **24-Hour Time Axis**: Wave visualization with actual clock times
 - **Live Data Indicators**: Visual indicators when real HealthKit data is streaming
 - **Confidence Scoring**: Live data reliability indicators based on heart rate variance
+
+### Native Menubar Integration
+- **Live Menubar Timer**: Real-time countdown timer displayed in macOS menubar
+- **Phase Arrow Indicators**: Dynamic arrows showing current energy phase (↗ transition, → high energy, ↘ low energy)
+- **Synchronized Timing**: Menubar timer matches main app calculations exactly
+- **Native Text Display**: Clean text-only menubar item with no background or icons
+- **Automatic Updates**: Timer updates every second showing MM:SS format countdown
+- **Phase Transitions**: Seamless transitions between 90-minute ultradian cycle phases
 
 ### Predictive Analytics
 - **6-Hour Forecasting**: Upcoming energy peaks, troughs, and optimal windows
@@ -113,6 +122,13 @@ Real-time calculations with second-level precision:
 - Personal wake/sleep time calculation from historical sleep data
 - Energy intensity modeling using sine wave patterns with real data adjustments
 - Predictive modeling for next 6 hours based on personal patterns
+
+### Menubar Integration
+- `src/services/trayUpdater.ts`: Real-time tray icon title updates using Tauri commands
+- `src-tauri/src/lib.rs`: Rust command `update_tray_title` for native tray icon text updates
+- Synchronized timing calculations matching main app logic exactly
+- Native macOS menubar text display without background or icon artifacts
+- Automatic cleanup on application unmount to prevent memory leaks
 
 ### UI Architecture
 - Component-based architecture with specialized rhythm tracking components
@@ -181,7 +197,7 @@ Latest implementation focuses on:
 2. **Dynamic Cycle Adjustments**: Live modifications to ultradian cycles based on physiological data
 3. **Minimal Dashboard Design**: Clean, focused UI prioritizing current ultradian cycle status
 4. **Predictive Analytics**: Data-driven forecasting with confidence scoring and recommendations
-5. **Desktop Widget Development**: Efficient macOS desktop widget for system tray integration
+5. **Native Menubar Timer**: Real-time countdown timer with phase arrows in macOS menubar
 6. **Performance Optimization**: Efficient processing of large health datasets (225K+ records)
 
 ## Performance Considerations
@@ -193,3 +209,5 @@ Latest implementation focuses on:
 - Swift FFI bridge provides native performance for health data processing
 - Background delivery ensures continuous monitoring without performance degradation
 - Tauri provides native performance for desktop integration
+- Native menubar timer updates use efficient Rust commands for minimal overhead
+- TrayUpdater service designed for minimal memory footprint and CPU usage
