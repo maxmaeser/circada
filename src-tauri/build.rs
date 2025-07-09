@@ -10,6 +10,8 @@ fn main() {
     #[cfg(target_os = "macos")]
     {
         compile_swift_bridge();
+        // Temporarily disabled until Xcode is available
+        // build_widget_extension();
     }
 }
 
@@ -79,3 +81,7 @@ fn compile_swift_bridge() {
         }
     }
 }
+
+// Widget build function temporarily removed - uncomment when Xcode is available
+// #[cfg(target_os = "macos")]
+// fn build_widget_extension() { ... }

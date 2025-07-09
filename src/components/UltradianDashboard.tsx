@@ -246,8 +246,30 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
               >
                 {getPhaseIcon(cycleState.energyPhase)}
               </div>
-              <div className="text-lg font-semibold !text-white capitalize">{cycleState.energyPhase} Energy</div>
-              <div className="text-sm !text-zinc-400">{Math.round(cycleState.energyIntensity * 100)}% intensity</div>
+              <div className="flex items-baseline justify-center gap-2 mb-2 whitespace-nowrap">
+                <span className="text-lg font-semibold !text-white capitalize">{cycleState.energyPhase} Energy</span>
+                <span className="text-sm !text-zinc-400 flex-shrink-0">{Math.round(cycleState.energyIntensity * 100)}% int</span>
+              </div>
+              <div className="text-xs !text-zinc-500">
+                {(() => {
+                  const totalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes() + currentTime.getSeconds() / 60;
+                  const cyclePosition = totalMinutes % 90;
+                  
+                  if (cyclePosition <= 15) {
+                    return 'Warm up: Light tasks, planning, prepare for focus';
+                  } else if (cyclePosition <= 30) {
+                    return 'Building momentum: Start challenging work';
+                  } else if (cyclePosition <= 45) {
+                    return 'Peak time: Complex projects, creative work';
+                  } else if (cyclePosition <= 60) {
+                    return 'Prime focus: Deep work, important decisions';
+                  } else if (cyclePosition <= 75) {
+                    return 'Wind down: Finish tasks, review, organize';
+                  } else {
+                    return 'Rest time: Breaks, reflection, light admin';
+                  }
+                })()}
+              </div>
             </div>
 
             {/* Time Remaining */}

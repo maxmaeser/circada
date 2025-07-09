@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useAppStore } from "@/lib/store"
 import { liveHealthKit, LiveCycleAdjustment } from "@/services/liveHealthKit"
 import { trayUpdater } from "@/services/trayUpdater"
+import { widgetDataProvider } from "@/services/widgetDataProvider"
 import UltradianDashboard from "@/components/UltradianDashboard"
 import PredictiveAnalytics from "@/components/PredictiveAnalytics"
 // import HealthDataImporter from "@/components/HealthDataImporter"
@@ -56,8 +57,9 @@ export default function App() {
     
     initLiveHealthKit();
     
-    // Start tray updater
+    // Start tray updater and widget data provider
     trayUpdater.start();
+    widgetDataProvider.start();
     
     const timer = setInterval(() => {
       const now = new Date()
@@ -78,6 +80,7 @@ export default function App() {
     return () => {
       clearInterval(timer);
       trayUpdater.stop();
+      widgetDataProvider.stop();
     };
   }, [setCurrentTime, isLiveHealthKit, liveAdjustment])
 

@@ -1,6 +1,7 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use serde::{Serialize, Deserialize};
 use tauri::{AppHandle, Manager};
+use chrono::Timelike;
 
 mod healthkit_ffi;
 
@@ -86,6 +87,145 @@ fn update_tray_title(app: AppHandle, title: String) {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct WidgetCycleData {
+    pub cycle_position: f64,
+    pub phase_icon: String,
+    pub phase_label: String,
+    pub energy_phase: String,
+    pub energy_intensity: f64,
+    pub time_remaining_minutes: i32,
+    pub time_remaining_seconds: i32,
+    pub next_phase_time: String,
+    pub cycle_number: i32,
+    pub heart_rate: Option<i32>,
+    pub confidence: f64,
+    pub background_color: String,
+}
+
+#[tauri::command]
+fn write_widget_data(data: WidgetCycleData) -> Result<(), String> {
+    #[cfg(target_os = "macos")]
+    {
+        use std::fs;
+        
+        // Get app group container path
+        let home_dir = std::env::var("HOME").map_err(|_| "Failed to get home directory")?;
+        let container_path = format!("{}/Library/Group Containers/group.com.circada.app", home_dir);
+        
+        // Create directory if it doesn't exist
+        if let Err(_) = fs::create_dir_all(&container_path) {
+            return Err("Failed to create container directory".to_string());
+        }
+        
+        let file_path = format!("{}/widget-data.json", container_path);
+        
+        // Serialize data to JSON
+        let json_data = serde_json::to_string(&data).map_err(|e| format!("Failed to serialize data: {}", e))?;
+        
+        // Write to file
+        fs::write(file_path, json_data).map_err(|e| format!("Failed to write widget data: {}", e))?;
+        
+        Ok(())
+    }
+    
+    #[cfg(not(target_os = "macos"))]
+    {
+        Ok(()) // No-op on non-macOS platforms
+    }
+}
+
+#[tauri::command]
+fn get_widget_data() -> WidgetCycleData {
+    let current_time = chrono::Utc::now();
+    let total_minutes = current_time.hour() as f64 * 60.0 + current_time.minute() as f64 + current_time.second() as f64 / 60.0;
+    let cycle_position = total_minutes % 90.0;
+    let cycle_number = (total_minutes / 90.0).floor() as i32 + 1;
+    
+    // Energy phase logic (matching main app)
+    let (energy_phase, energy_intensity) = if cycle_position <= 5.0 {
+        ("transition".to_string(), 0.4 + (cycle_position / 5.0) * 0.4)
+    } else if cycle_position <= 60.0 {
+        let progress = (cycle_position - 5.0) / 55.0;
+        ("high".to_string(), 0.5 + 0.4 * (progress * std::f64::consts::PI).sin())
+    } else if cycle_position <= 65.0 {
+        ("transition".to_string(), 0.8 - ((cycle_position - 60.0) / 5.0) * 0.4)
+    } else {
+        let progress = (cycle_position - 65.0) / 25.0;
+        ("low".to_string(), 0.2 + 0.2 * (progress * std::f64::consts::PI).sin())
+    };
+    
+    // Time remaining calculation
+    let time_remaining: f64 = if energy_phase == "high" || (energy_phase == "transition" && cycle_position <= 60.0) {
+        60.0 - cycle_position
+    } else {
+        90.0 - cycle_position
+    };
+    
+    let minutes_left = time_remaining.floor() as i32;
+    let seconds_left = ((time_remaining - minutes_left as f64) * 60.0).floor() as i32;
+    
+    // Phase icon (6-phase system)
+    let phase_icon = if cycle_position <= 15.0 {
+        "↗".to_string()
+    } else if cycle_position <= 30.0 {
+        "↑".to_string()
+    } else if cycle_position <= 45.0 {
+        "🔥".to_string()
+    } else if cycle_position <= 60.0 {
+        "⚡".to_string()
+    } else if cycle_position <= 75.0 {
+        "↘".to_string()
+    } else {
+        "😴".to_string()
+    };
+    
+    // Phase label
+    let phase_label = if cycle_position <= 15.0 {
+        "Rising Energy".to_string()
+    } else if cycle_position <= 30.0 {
+        "Building Energy".to_string()
+    } else if cycle_position <= 45.0 {
+        "Peak Energy".to_string()
+    } else if cycle_position <= 60.0 {
+        "Peak Flow".to_string()
+    } else if cycle_position <= 75.0 {
+        "Winding Down".to_string()
+    } else {
+        "Rest Phase".to_string()
+    };
+    
+    // Background color (HSL)
+    let background_color = if energy_phase == "high" {
+        format!("hsl({}, 70%, {}%)", 120.0 + energy_intensity * 60.0, 50.0 + energy_intensity * 20.0)
+    } else if energy_phase == "low" {
+        format!("hsl(220, 70%, {}%)", 30.0 + energy_intensity * 30.0)
+    } else {
+        format!("hsl(170, 70%, {}%)", 40.0 + energy_intensity * 20.0)
+    };
+    
+    // Next phase time
+    let next_phase_minutes = total_minutes + time_remaining;
+    let next_phase_hour = ((next_phase_minutes / 60.0).floor() as i32) % 24;
+    let next_phase_min = (next_phase_minutes % 60.0) as i32;
+    let next_phase_time = format!("{}:{:02}", next_phase_hour, next_phase_min);
+    
+    WidgetCycleData {
+        cycle_position,
+        phase_icon,
+        phase_label,
+        energy_phase,
+        energy_intensity,
+        time_remaining_minutes: minutes_left,
+        time_remaining_seconds: seconds_left,
+        next_phase_time,
+        cycle_number,
+        heart_rate: None, // Will be populated by live data if available
+        confidence: 0.75,
+        background_color,
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     use tauri::menu::{Menu, MenuItem};
@@ -104,7 +244,9 @@ pub fn run() {
             healthkit_ffi::healthkit_is_available,
             show_menubar_window,
             hide_menubar_window,
-            update_tray_title
+            update_tray_title,
+            get_widget_data,
+            write_widget_data
         ])
         .setup(|app| {
             let show_item = MenuItem::with_id(app, "show", "Show Dashboard", true, None::<&str>)?;
