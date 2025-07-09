@@ -22,3 +22,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Large health data files
+*.xml
+export.xml
+export_cda.xml
+public/export.xml
+public/export_cda.xml
+circada/export.xml
+circada/export_cda.xml
+circada/public/export.xml
+circada/public/export_cda.xml
