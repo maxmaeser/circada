@@ -52,8 +52,9 @@ npm run preview
 - `src/services/healthDataParser.ts`: HealthKit XML parser for historical health data analysis
 - `src/services/realDataCircadian.ts`: Personal circadian analysis engine
 - `src/services/trayUpdater.ts`: Real-time menubar tray icon updater service
-- `src/components/UltradianDashboard.tsx`: Main minimal dashboard component
+- `src/components/UltradianDashboard.tsx`: Main dashboard with interactive wave visualization
 - `src/components/PredictiveAnalytics.tsx`: Data-rich prediction interface with 6-hour forecasting
+- `src/components/BurgerMenu.tsx`: Unified developer tools and settings interface
 - `src/components/MenubarWidget.tsx`: High-performance system tray widget (legacy)
 - `src/components/App.tsx`: Main application component with live HealthKit integration
 
@@ -74,7 +75,9 @@ npm run preview
 - **Live Countdown Timer**: MM:SS format with real-time seconds updates
 - **6-Phase Energy Icons**: ↗ Rising, ↑ Building, 🔥 Peak, ⚡ Flow, ↘ Winding, 😴 Rest
 - **Adaptive Icon Colors**: Icons automatically adjust color based on background brightness
-- **24-Hour Circadian Bar**: Beautiful gradient visualization of full daily energy cycle
+- **Interactive Wave Visualization**: SVG-based circadian and ultradian rhythm waves with hover tooltips
+- **Energy-based Space Backgrounds**: Dynamic gradient backgrounds correlating with energy levels
+- **Real-time Data Overlay**: Live heart rate and energy intensity display on hover
 - **Live Data Indicators**: Visual indicators when real HealthKit data is streaming
 - **Confidence Scoring**: Live data reliability indicators based on heart rate variance
 
@@ -85,6 +88,15 @@ npm run preview
 - **Native Text Display**: Clean text-only menubar item with no background or icons
 - **Automatic Updates**: Timer updates every second showing MM:SS format countdown
 - **Phase Transitions**: Seamless transitions between 90-minute ultradian cycle phases
+
+### Burger Menu Interface
+- **Unified Controls**: All developer tools and settings consolidated in single hamburger menu
+- **Theme Selector**: Complete theme switching (Night, Light, Terminal) within dropdown
+- **Mock Data Testing**: Import testing functionality integrated into menu interface
+- **Mock Analysis Engine**: Full circadian analysis with ultradian cycles, sleep efficiency, and ADHD detection
+- **Collapsible Results**: Persistent status display showing test and analysis results when menu closed
+- **Copy Functionality**: One-click JSON export of analysis results with clipboard feedback
+- **Clean UI**: Removes clutter from main interface while preserving all functionality
 
 ### Predictive Analytics & Recommendations
 - **6-Hour Forecasting**: Upcoming energy phases with specific activity suggestions
@@ -199,10 +211,10 @@ Real-time calculations with second-level precision:
 
 Latest implementation focuses on:
 1. **Live HealthKit Integration**: Real-time heart rate streaming with Swift FFI bridge
-2. **Enhanced UI Systems**: 6-phase icon system with adaptive coloring and circadian visualization
-3. **Predictive Interface**: Phase-specific recommendations and 6-hour forecasting
-4. **Native Menubar Timer**: Real-time countdown timer with phase arrows in macOS menubar
-5. **macOS Widget Development**: Planning desktop widget based on first dashboard card
+2. **Interactive Wave Visualization**: SVG-based circadian and ultradian rhythm display with hover tooltips
+3. **Burger Menu Interface**: Unified developer tools consolidating theme selector and mock analysis
+4. **Predictive Interface**: Phase-specific recommendations and 6-hour forecasting
+5. **Native Menubar Timer**: Real-time countdown timer with phase arrows in macOS menubar
 6. **Performance Optimization**: Efficient processing of large health datasets (225K+ records)
 
 ## macOS Widget Implementation - COMPLETED ✅
