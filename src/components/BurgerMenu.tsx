@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Menu, X, Copy } from 'lucide-react'
 import { useThemeStore } from '@/lib/themeStore'
 import { Button } from './ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 
 // Test direct imports from services
 import { HealthDataParser, RealDataCircadianEngine } from '../services/healthDataTypes'
@@ -16,7 +15,7 @@ interface BurgerMenuProps {
   onTestDataToggle: () => void
 }
 
-export default function BurgerMenu({ showTestData, onTestDataToggle }: BurgerMenuProps) {
+export default function BurgerMenu({ onTestDataToggle }: BurgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [testStatus, setTestStatus] = useState('Not loaded')
   const [hasTestedData, setHasTestedData] = useState(false)

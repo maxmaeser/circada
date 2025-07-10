@@ -1,15 +1,19 @@
 {
   "name": "circadian-rythm-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
+    "build:typed": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "tauri": "tauri",
-    "test": "jest"
+    "test": "jest",
+    "build:release": "./scripts/build-release.sh",
+    "build:dev": "./scripts/dev-build.sh",
+    "build:universal": "npm run tauri build -- --target universal-apple-darwin"
   },
   "dependencies": {
     "@radix-ui/react-progress": "^1.1.7",

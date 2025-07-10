@@ -16,7 +16,7 @@ export default function App() {
   const setCurrentTime = useAppStore((state) => state.setCurrentTime)
   const currentTime = useAppStore((state) => state.currentTime)
   const [heartRate, setHeartRate] = useState<number>(75)
-  const [realDataAnalysis, setRealDataAnalysis] = useState<any>(null)
+  const [realDataAnalysis] = useState<any>(null)
   const [showRealData, setShowRealData] = useState(false) // Switch to true to enable real data
   const [isLiveHealthKit, setIsLiveHealthKit] = useState(false)
   const [liveAdjustment] = useState(new LiveCycleAdjustment())

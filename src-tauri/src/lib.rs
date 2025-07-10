@@ -255,6 +255,7 @@ pub fn run() {
 
             let _tray = TrayIconBuilder::with_id("main")
                 .menu(&menu)
+                .title("Circada")
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "show" => {
                         if let Some(window) = app.get_webview_window("main") {

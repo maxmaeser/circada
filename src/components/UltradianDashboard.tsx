@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
-import { TrendingUp, TrendingDown, Activity, Clock, Zap } from 'lucide-react';
+import { Activity, Zap } from 'lucide-react';
 
 interface UltradianDashboardProps {
   currentTime: Date;

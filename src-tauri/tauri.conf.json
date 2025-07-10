@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "circada",
-  "version": "0.1.0",
+  "productName": "Circada",
+  "version": "1.0.0",
   "identifier": "com.circada.app",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -12,18 +12,24 @@
   "app": {
     "windows": [
       {
-        "title": "Circada",
-        "width": 800,
-        "height": 600,
+        "title": "Circada - Circadian Rhythm Tracker",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600,
         "resizable": true,
         "fullscreen": false,
         "visible": true,
+        "decorations": true,
+        "transparent": false,
+        "alwaysOnTop": false,
         "label": "main"
       }
     ],
     "security": {
       "csp": null
-    }
+    },
+    "macOSPrivateApi": true
   },
   "bundle": {
     "active": true,
@@ -31,8 +37,32 @@
     "icon": [
       "icons/icon.icns"
     ],
+    "category": "Healthcare and Fitness",
+    "shortDescription": "Circadian Rhythm Tracker",
+    "longDescription": "Track your circadian and ultradian rhythms with real-time HealthKit integration, predictive analytics, and personalized insights for optimal energy management.",
     "macOS": {
-      "minimumSystemVersion": "13.0"
+      "minimumSystemVersion": "13.0",
+      "signingIdentity": null,
+      "providerShortName": null,
+      "entitlements": "entitlements.plist",
+      "exceptionDomain": "",
+      "frameworks": [],
+      "files": {},
+      "dmg": {
+        "background": null,
+        "windowSize": {
+          "width": 660,
+          "height": 400
+        },
+        "appPosition": {
+          "x": 180,
+          "y": 170
+        },
+        "applicationFolderPosition": {
+          "x": 480,
+          "y": 170
+        }
+      }
     }
   }
 }
