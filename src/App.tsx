@@ -7,10 +7,7 @@ import { trayUpdater } from "@/services/trayUpdater"
 import { widgetDataProvider } from "@/services/widgetDataProvider"
 import UltradianDashboard from "@/components/UltradianDashboard"
 import PredictiveAnalytics from "@/components/PredictiveAnalytics"
-// import HealthDataImporter from "@/components/HealthDataImporter"
-import HealthDataTest from "@/components/HealthDataTest"
-import ThemeDropdown from "@/components/ThemeDropdown"
-import AnalysisDebug from "@/components/AnalysisDebug"
+import BurgerMenu from "@/components/BurgerMenu"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Database } from "lucide-react"
@@ -98,6 +95,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
+      {/* Burger Menu */}
+      <BurgerMenu 
+        showTestData={showRealData}
+        onTestDataToggle={() => setShowRealData(!showRealData)}
+      />
+      
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <header className="flex justify-between items-center">
@@ -122,7 +125,6 @@ export default function App() {
               </p>
             </div>
           </div>
-          <ThemeDropdown />
         </header>
 
         {/* Main Ultradian Dashboard */}
@@ -179,13 +181,6 @@ export default function App() {
           heartRate={heartRate}
           realDataAnalysis={realDataAnalysis}
         />
-        
-        {import.meta.env.DEV && <AnalysisDebug />}
-
-        {/* Health Data Import Section - At Bottom */}
-        {!showRealData && (
-          <HealthDataTest />
-        )}
       </div>
     </div>
   )

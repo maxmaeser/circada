@@ -96,34 +96,9 @@ export default function PredictiveAnalytics({ currentTime, heartRate, realDataAn
     return { variance: Math.abs(variance), trend };
   };
 
-  const getEnergyPredictionForNext2Hours = () => {
-    const predictions = [];
-    const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
-    
-    for (let i = 0; i < 120; i += 15) { // Every 15 minutes for next 2 hours
-      const futureMinutes = currentMinutes + i;
-      const cyclePosition = futureMinutes % 90;
-      
-      let energy = 0.5;
-      if (cyclePosition <= 60) {
-        energy = 0.5 + 0.4 * Math.sin((cyclePosition / 60) * Math.PI);
-      } else {
-        energy = 0.3 + 0.2 * Math.sin(((cyclePosition - 60) / 30) * Math.PI);
-      }
-      
-      predictions.push({
-        time: i,
-        energy: energy,
-        label: i === 0 ? 'Now' : `+${Math.floor(i/60)}h${i%60 ? (i%60) + 'm' : ''}`
-      });
-    }
-    
-    return predictions;
-  };
 
   const predictions = generatePredictions();
   const hrVariance = calculateHeartRateVariance();
-  const energyPredictions = getEnergyPredictionForNext2Hours();
 
   return (
     <div className="space-y-6">
@@ -207,65 +182,6 @@ export default function PredictiveAnalytics({ currentTime, heartRate, realDataAn
         </CardContent>
       </Card>
 
-      {/* Energy Prediction Graph */}
-      <Card className="!bg-zinc-800 !border-zinc-700">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold !text-white flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-green-400" />
-            2-Hour Energy Forecast
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="relative h-32">
-            <svg width="100%" height="100%" viewBox="0 0 400 120" className="overflow-visible">
-              {/* Background grid */}
-              <defs>
-                <pattern id="forecastGrid" width="50" height="20" patternUnits="userSpaceOnUse">
-                  <path d="M 50 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5"/>
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#forecastGrid)" />
-              
-              {/* Energy prediction line */}
-              <path
-                d={energyPredictions.map((p, i) => 
-                  `${i === 0 ? 'M' : 'L'} ${(i / (energyPredictions.length - 1)) * 400} ${120 - (p.energy * 100)}`
-                ).join(' ')}
-                fill="none"
-                stroke="url(#energyGradient)"
-                strokeWidth="3"
-                className="drop-shadow-sm"
-              />
-              
-              {/* Gradient definition */}
-              <defs>
-                <linearGradient id="energyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#22c55e" />
-                  <stop offset="50%" stopColor="#eab308" />
-                  <stop offset="100%" stopColor="#3b82f6" />
-                </linearGradient>
-              </defs>
-              
-              {/* Current position marker */}
-              <circle cx="0" cy={120 - (energyPredictions[0].energy * 100)} r="4" fill="#ffffff" className="drop-shadow-lg" />
-              
-              {/* Time labels */}
-              {energyPredictions.filter((_, i) => i % 2 === 0).map((p, i) => (
-                <text key={i} x={(i * 2) / (energyPredictions.length - 1) * 400} y="115" 
-                      textAnchor="middle" className="fill-muted-foreground text-xs">
-                  {p.label}
-                </text>
-              ))}
-            </svg>
-          </div>
-          
-          <div className="mt-4 flex justify-between text-xs text-muted-foreground">
-            <span>Low Energy</span>
-            <span>Moderate</span>
-            <span>High Energy</span>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Personal Insights */}
       {realDataAnalysis && (

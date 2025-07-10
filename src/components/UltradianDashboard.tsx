@@ -30,6 +30,24 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
     confidence: 0.85
   });
 
+  const [hoverData, setHoverData] = useState<{
+    x: number;
+    y: number;
+    svgX: number;
+    time: string;
+    circadianIntensity: number;
+    ultradianIntensity: number;
+    visible: boolean;
+  }>({
+    x: 0,
+    y: 0,
+    svgX: 0,
+    time: '',
+    circadianIntensity: 0,
+    ultradianIntensity: 0,
+    visible: false
+  });
+
   useEffect(() => {
     const calculateCycleState = () => {
       const totalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes() + currentTime.getSeconds() / 60;
@@ -432,63 +450,209 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
               </div>
             </div>
             
-            <div className="relative h-16 bg-zinc-900 rounded-lg overflow-hidden">
-              {/* 24-hour gradient background */}
-              <div 
-                className="absolute inset-0 w-full h-full"
-                style={{
-                  background: `linear-gradient(to right, 
-                    #1e3a8a 0%,    /* Deep blue - midnight */
-                    #312e81 8%,    /* Purple - early morning */
-                    #7c3aed 16%,   /* Purple - dawn */
-                    #f59e0b 25%,   /* Orange - sunrise */
-                    #fbbf24 33%,   /* Yellow - morning */
-                    #84cc16 41%,   /* Green - late morning */
-                    #22d3ee 50%,   /* Cyan - noon */
-                    #84cc16 58%,   /* Green - afternoon */
-                    #fbbf24 66%,   /* Yellow - late afternoon */
-                    #f59e0b 75%,   /* Orange - sunset */
-                    #7c3aed 83%,   /* Purple - twilight */
-                    #312e81 91%,   /* Purple - evening */
-                    #1e3a8a 100%   /* Deep blue - night */
-                  )`
+            <div className="relative h-32 bg-zinc-900 rounded-lg overflow-hidden border border-zinc-700/50 shadow-2xl">
+              {/* SVG Wave Visualization */}
+              <svg 
+                width="100%" 
+                height="100%" 
+                viewBox="0 0 1000 128" 
+                className="absolute inset-0 cursor-crosshair"
+                preserveAspectRatio="none"
+                onMouseMove={(e) => {
+                  const svgRect = e.currentTarget.getBoundingClientRect();
+                  const mouseX = e.clientX - svgRect.left;
+                  const mouseY = e.clientY - svgRect.top;
+                  
+                  // Convert to SVG coordinates
+                  const svgX = (mouseX / svgRect.width) * 1000;
+                  
+                  // Calculate time from x position
+                  const hourFloat = (svgX / 1000) * 24;
+                  const hour = Math.floor(hourFloat);
+                  const minute = Math.floor((hourFloat - hour) * 60);
+                  const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                  
+                  // Create a temporary date object for this time
+                  const hoverTime = new Date(currentTime);
+                  hoverTime.setHours(hour, minute, 0, 0);
+                  
+                  // Calculate energy intensities at this time using raw energy values
+                  const circadianEnergy = getCircadianEnergyValue(hoverTime, realDataAnalysis);
+                  const ultradianEnergy = getUltradianEnergyValue(hoverTime);
+                  
+                  setHoverData({
+                    x: mouseX,
+                    y: mouseY,
+                    svgX: svgX,
+                    time: timeString,
+                    circadianIntensity: circadianEnergy * 100,
+                    ultradianIntensity: ultradianEnergy * 100,
+                    visible: true
+                  });
                 }}
-              />
-              
-              {/* Hour markers */}
-              {Array.from({ length: 24 }, (_, i) => {
-                const x = (i / 24) * 100;
-                const hour = i;
-                const isCurrentHour = hour === currentTime.getHours();
-                
-                return (
-                  <div key={i} className="absolute top-0 bottom-0 flex flex-col justify-between" style={{ left: `${x}%` }}>
-                    <div className="w-px h-full bg-white/20" />
-                    <div className="absolute -bottom-6 left-0 transform -translate-x-1/2">
-                      <span className={`text-xs font-mono ${isCurrentHour ? 'text-white font-bold' : 'text-zinc-400'}`}>
-                        {String(hour).padStart(2, '0')}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-              
-              {/* Current time indicator */}
-              <div 
-                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg"
-                style={{ 
-                  left: `${((currentTime.getHours() * 60 + currentTime.getMinutes()) / (24 * 60)) * 100}%`
+                onMouseLeave={() => {
+                  setHoverData(prev => ({ ...prev, visible: false }));
                 }}
               >
-                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-white rounded-full shadow-lg animate-pulse" />
+                {/* Energy-based space background */}
+                <defs>
+                  <linearGradient id="energyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    {/* Night (sleep) - higher opacity purple/indigo */}
+                    <stop offset="0%" stopColor="rgba(99, 102, 241, 0.15)" />
+                    <stop offset="4%" stopColor="rgba(99, 102, 241, 0.15)" />
+                    
+                    {/* Early morning - slight decrease */}
+                    <stop offset="20%" stopColor="rgba(139, 92, 246, 0.12)" />
+                    <stop offset="25%" stopColor="rgba(139, 92, 246, 0.08)" />
+                    
+                    {/* Morning/day - minimal opacity (high energy) */}
+                    <stop offset="30%" stopColor="rgba(99, 102, 241, 0.04)" />
+                    <stop offset="35%" stopColor="rgba(99, 102, 241, 0.03)" />
+                    <stop offset="50%" stopColor="rgba(99, 102, 241, 0.03)" />
+                    <stop offset="60%" stopColor="rgba(99, 102, 241, 0.04)" />
+                    
+                    {/* Evening wind down - increasing opacity */}
+                    <stop offset="70%" stopColor="rgba(139, 92, 246, 0.06)" />
+                    <stop offset="80%" stopColor="rgba(139, 92, 246, 0.10)" />
+                    
+                    {/* Night (sleep) - higher opacity */}
+                    <stop offset="90%" stopColor="rgba(99, 102, 241, 0.13)" />
+                    <stop offset="100%" stopColor="rgba(99, 102, 241, 0.15)" />
+                  </linearGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#energyGradient)" />
+                
+                {/* Circadian rhythm wave (main wave) */}
+                <path
+                  d={generateCircadianWave(1000, 128, currentTime, realDataAnalysis)}
+                  fill="none"
+                  stroke="rgba(34, 197, 94, 0.9)"
+                  strokeWidth="2.5"
+                  className="drop-shadow-lg"
+                />
+                
+                {/* Ultradian rhythm wave (secondary wave with reduced opacity) */}
+                <path
+                  d={generateUltradianWave(1000, 128, currentTime)}
+                  fill="none"
+                  stroke="rgba(59, 130, 246, 0.5)"
+                  strokeWidth="2"
+                  className="drop-shadow-md"
+                />
+                
+                {/* Hour markers */}
+                {Array.from({ length: 24 }, (_, i) => {
+                  const x = (i / 24) * 1000;
+                  
+                  return (
+                    <line 
+                      key={i}
+                      x1={x} 
+                      y1="0" 
+                      x2={x} 
+                      y2="128" 
+                      stroke="rgba(255,255,255,0.08)" 
+                      strokeWidth="1" 
+                    />
+                  );
+                })}
+                
+                {/* Current time indicator */}
+                <line
+                  x1={((currentTime.getHours() * 60 + currentTime.getMinutes()) / (24 * 60)) * 1000}
+                  y1="-2"
+                  x2={((currentTime.getHours() * 60 + currentTime.getMinutes()) / (24 * 60)) * 1000}
+                  y2="130"
+                  stroke="white"
+                  strokeWidth="2"
+                  className="drop-shadow-lg"
+                />
+                <circle
+                  cx={((currentTime.getHours() * 60 + currentTime.getMinutes()) / (24 * 60)) * 1000}
+                  cy={getCircadianEnergyAtTime(currentTime, realDataAnalysis, 128)}
+                  r="5"
+                  fill="white"
+                  stroke="rgba(34, 197, 94, 0.5)"
+                  strokeWidth="2"
+                  className="drop-shadow-lg animate-pulse"
+                />
+                
+                {/* Hover vertical line */}
+                {hoverData.visible && (
+                  <line
+                    x1={hoverData.svgX}
+                    y1="-2"
+                    x2={hoverData.svgX}
+                    y2="130"
+                    stroke="rgba(156, 163, 175, 0.7)"
+                    strokeWidth="1"
+                    strokeDasharray="3,3"
+                    className="pointer-events-none drop-shadow-sm"
+                  />
+                )}
+              </svg>
+              
+              {/* Hour labels positioned outside SVG to prevent stretching */}
+              <div className="absolute bottom-2 left-0 right-0 flex justify-between px-1">
+                {Array.from({ length: 24 }, (_, i) => {
+                  const hour = i;
+                  const isCurrentHour = hour === currentTime.getHours();
+                  
+                  return (
+                    <div 
+                      key={i}
+                      className={`text-xs font-mono ${isCurrentHour ? 'text-white font-bold' : 'text-zinc-300'}`}
+                      style={{ 
+                        fontSize: '11px',
+                        width: '100%',
+                        textAlign: 'center',
+                        flex: '1'
+                      }}
+                    >
+                      {String(hour).padStart(2, '0')}
+                    </div>
+                  );
+                })}
               </div>
               
-              {/* Phase labels */}
-              <div className="absolute bottom-1 left-2 text-xs font-medium text-white/80">Night</div>
-              <div className="absolute bottom-1 left-1/4 text-xs font-medium text-white/80">Morning</div>
-              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-medium text-white/80">Noon</div>
-              <div className="absolute bottom-1 right-1/4 text-xs font-medium text-white/80">Evening</div>
-              <div className="absolute bottom-1 right-2 text-xs font-medium text-white/80">Night</div>
+              {/* Hover tooltip - positioned inside the container but above content */}
+              {hoverData.visible && (
+                <div 
+                  className="absolute z-10 bg-zinc-800/90 backdrop-blur-sm border border-zinc-600/80 rounded-lg p-3 shadow-2xl pointer-events-none whitespace-nowrap"
+                  style={{
+                    left: hoverData.x > 300 ? hoverData.x - 140 : hoverData.x + 10,
+                    top: Math.max(10, hoverData.y - 90),
+                  }}
+                >
+                  <div className="text-white text-sm font-medium mb-2">
+                    {hoverData.time}
+                  </div>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-0.5 bg-green-400 rounded"></div>
+                      <span className="text-zinc-300">Circadian:</span>
+                      <span className="text-white font-mono">{Math.round(hoverData.circadianIntensity)}%</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-0.5 bg-blue-400 opacity-60 rounded"></div>
+                      <span className="text-zinc-300">Ultradian:</span>
+                      <span className="text-white font-mono">{Math.round(hoverData.ultradianIntensity)}%</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Legend below the bar */}
+            <div className="flex justify-center gap-6 text-xs mt-2">
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-0.5 bg-green-400 rounded"></div>
+                <span className="text-zinc-400">Circadian Rhythm</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-0.5 bg-blue-400 opacity-40 rounded"></div>
+                <span className="text-zinc-400">Ultradian Cycles</span>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -525,4 +689,335 @@ function generateWavePath(width: number, height: number): string {
   }
   
   return points.join(' ');
+}
+
+// Helper function to generate circadian wave based on health data and ADHD patterns
+function generateCircadianWave(width: number, height: number, currentTime: Date, realDataAnalysis?: any): string {
+  const points: string[] = [];
+  const segments = 240; // 24 hours in 6-minute segments for smooth curve
+  const energyLevels: number[] = [];
+  
+  // Personal wake/sleep times from health data or defaults
+  const personalWakeTime = realDataAnalysis?.personalizedWakeTime || 7; // 7 AM default
+  const personalSleepTime = realDataAnalysis?.personalizedSleepTime || 23; // 11 PM default
+  
+  // First pass: calculate raw energy levels
+  for (let i = 0; i <= segments; i++) {
+    const hour = (i / segments) * 24; // 0-24 hour representation
+    
+    // Calculate energy level based on circadian rhythm
+    let energyLevel = 0.5; // baseline
+    
+    // Morning rise (wake time to wake+4 hours)
+    if (hour >= personalWakeTime && hour <= personalWakeTime + 4) {
+      const progress = (hour - personalWakeTime) / 4;
+      energyLevel = 0.3 + 0.6 * Math.sin(progress * Math.PI / 2); // 0.3 to 0.9
+    }
+    // Day peak (wake+4 to wake+8 hours)
+    else if (hour > personalWakeTime + 4 && hour <= personalWakeTime + 8) {
+      energyLevel = 0.8 + 0.1 * Math.sin((hour - personalWakeTime - 4) * Math.PI / 2); // 0.8 to 0.9
+    }
+    // Afternoon dip (wake+8 to wake+10 hours)
+    else if (hour > personalWakeTime + 8 && hour <= personalWakeTime + 10) {
+      const progress = (hour - personalWakeTime - 8) / 2;
+      energyLevel = 0.9 - 0.2 * Math.sin(progress * Math.PI); // 0.9 to 0.7
+    }
+    // Evening recovery (wake+10 to sleep-2 hours)
+    else if (hour > personalWakeTime + 10 && hour <= personalSleepTime - 2) {
+      energyLevel = 0.7 + 0.1 * Math.sin((hour - personalWakeTime - 10) * Math.PI / 4); // 0.7 to 0.8
+    }
+    // Evening decline (sleep-2 to sleep)
+    else if (hour > personalSleepTime - 2 && hour <= personalSleepTime) {
+      const progress = (hour - (personalSleepTime - 2)) / 2;
+      energyLevel = 0.8 - 0.5 * Math.sin(progress * Math.PI / 2); // 0.8 to 0.3
+    }
+    // Night/sleep (sleep to wake)
+    else {
+      // Handle wrap-around for sleep period
+      let sleepProgress = 0;
+      if (hour > personalSleepTime) {
+        sleepProgress = (hour - personalSleepTime) / (24 - personalSleepTime + personalWakeTime);
+      } else {
+        sleepProgress = (24 - personalSleepTime + hour) / (24 - personalSleepTime + personalWakeTime);
+      }
+      energyLevel = 0.1 + 0.2 * Math.sin(sleepProgress * Math.PI); // 0.1 to 0.3
+    }
+    
+    // ADHD adjustments if available (reduced impact for smoother curve)
+    if (realDataAnalysis?.adhdRiskScore) {
+      const adhdImpact = realDataAnalysis.adhdRiskScore / 100;
+      // Higher ADHD risk = more energy variability (reduced from 0.5 to 0.3)
+      const variability = 0.05 + adhdImpact * 0.1;
+      energyLevel *= (1 + variability * Math.sin(hour * Math.PI * 2) * 0.3);
+    }
+    
+    energyLevels.push(energyLevel);
+  }
+  
+  // Second pass: apply smoothing
+  const smoothedLevels = smoothArray(energyLevels, 3);
+  
+  // Third pass: generate path
+  for (let i = 0; i <= segments; i++) {
+    const x = (i / segments) * width;
+    const energyLevel = smoothedLevels[i];
+    
+    // Convert to y-coordinate (flip because SVG y=0 is top)
+    const y = height - (energyLevel * height * 0.8) - height * 0.1;
+    
+    if (i === 0) {
+      points.push(`M ${x} ${y}`);
+    } else {
+      points.push(`L ${x} ${y}`);
+    }
+  }
+  
+  return points.join(' ');
+}
+
+// Helper function to generate ultradian wave pattern
+function generateUltradianWave(width: number, height: number, currentTime: Date): string {
+  const points: string[] = [];
+  const segments = 240; // 24 hours in 6-minute segments
+  const energyLevels: number[] = [];
+  
+  // First pass: calculate raw energy levels
+  for (let i = 0; i <= segments; i++) {
+    const hour = (i / segments) * 24; // 0-24 hour representation
+    const totalMinutes = hour * 60;
+    
+    // Calculate multiple overlapping ultradian cycles
+    const primaryCycle = totalMinutes % 90; // 90-minute cycles
+    const secondaryCycle = totalMinutes % 120; // 120-minute cycles for variation
+    
+    // Primary 90-minute cycle
+    let primaryEnergy = 0.5;
+    if (primaryCycle <= 60) {
+      const progress = primaryCycle / 60;
+      primaryEnergy = 0.3 + 0.4 * Math.sin(progress * Math.PI);
+    } else {
+      const progress = (primaryCycle - 60) / 30;
+      primaryEnergy = 0.7 - 0.2 * Math.sin(progress * Math.PI);
+    }
+    
+    // Secondary 120-minute cycle for complexity
+    const secondaryEnergy = 0.5 + 0.1 * Math.sin((secondaryCycle / 120) * Math.PI * 2);
+    
+    // Combine cycles
+    const combinedEnergy = (primaryEnergy * 0.8 + secondaryEnergy * 0.2);
+    
+    energyLevels.push(combinedEnergy);
+  }
+  
+  // Second pass: apply smoothing
+  const smoothedLevels = smoothArray(energyLevels, 2);
+  
+  // Third pass: generate path
+  for (let i = 0; i <= segments; i++) {
+    const x = (i / segments) * width;
+    const energyLevel = smoothedLevels[i];
+    
+    // Convert to y-coordinate with reduced amplitude for secondary wave
+    const y = height/2 + (energyLevel - 0.5) * height * 0.4;
+    
+    if (i === 0) {
+      points.push(`M ${x} ${y}`);
+    } else {
+      points.push(`L ${x} ${y}`);
+    }
+  }
+  
+  return points.join(' ');
+}
+
+// Helper function to smooth an array of numbers
+function smoothArray(data: number[], windowSize: number): number[] {
+  const smoothed: number[] = [];
+  const halfWindow = Math.floor(windowSize / 2);
+  
+  for (let i = 0; i < data.length; i++) {
+    let sum = 0;
+    let count = 0;
+    
+    for (let j = Math.max(0, i - halfWindow); j <= Math.min(data.length - 1, i + halfWindow); j++) {
+      sum += data[j];
+      count++;
+    }
+    
+    smoothed.push(sum / count);
+  }
+  
+  return smoothed;
+}
+
+// Helper function to get circadian energy level at specific time
+function getCircadianEnergyAtTime(currentTime: Date, realDataAnalysis?: any, height: number = 128): number {
+  const hour = currentTime.getHours() + currentTime.getMinutes() / 60;
+  
+  // Personal wake/sleep times from health data or defaults
+  const personalWakeTime = realDataAnalysis?.personalizedWakeTime || 7; // 7 AM default
+  const personalSleepTime = realDataAnalysis?.personalizedSleepTime || 23; // 11 PM default
+  
+  // Calculate energy level based on circadian rhythm
+  let energyLevel = 0.5; // baseline
+  
+  // Morning rise (wake time to wake+4 hours)
+  if (hour >= personalWakeTime && hour <= personalWakeTime + 4) {
+    const progress = (hour - personalWakeTime) / 4;
+    energyLevel = 0.3 + 0.6 * Math.sin(progress * Math.PI / 2); // 0.3 to 0.9
+  }
+  // Day peak (wake+4 to wake+8 hours)
+  else if (hour > personalWakeTime + 4 && hour <= personalWakeTime + 8) {
+    energyLevel = 0.8 + 0.1 * Math.sin((hour - personalWakeTime - 4) * Math.PI / 2); // 0.8 to 0.9
+  }
+  // Afternoon dip (wake+8 to wake+10 hours)
+  else if (hour > personalWakeTime + 8 && hour <= personalWakeTime + 10) {
+    const progress = (hour - personalWakeTime - 8) / 2;
+    energyLevel = 0.9 - 0.2 * Math.sin(progress * Math.PI); // 0.9 to 0.7
+  }
+  // Evening recovery (wake+10 to sleep-2 hours)
+  else if (hour > personalWakeTime + 10 && hour <= personalSleepTime - 2) {
+    energyLevel = 0.7 + 0.1 * Math.sin((hour - personalWakeTime - 10) * Math.PI / 4); // 0.7 to 0.8
+  }
+  // Evening decline (sleep-2 to sleep)
+  else if (hour > personalSleepTime - 2 && hour <= personalSleepTime) {
+    const progress = (hour - (personalSleepTime - 2)) / 2;
+    energyLevel = 0.8 - 0.5 * Math.sin(progress * Math.PI / 2); // 0.8 to 0.3
+  }
+  // Night/sleep (sleep to wake)
+  else {
+    // Handle wrap-around for sleep period
+    let sleepProgress = 0;
+    if (hour > personalSleepTime) {
+      sleepProgress = (hour - personalSleepTime) / (24 - personalSleepTime + personalWakeTime);
+    } else {
+      sleepProgress = (24 - personalSleepTime + hour) / (24 - personalSleepTime + personalWakeTime);
+    }
+    energyLevel = 0.1 + 0.2 * Math.sin(sleepProgress * Math.PI); // 0.1 to 0.3
+  }
+  
+  // ADHD adjustments if available (reduced impact for smoother curve)
+  if (realDataAnalysis?.adhdRiskScore) {
+    const adhdImpact = realDataAnalysis.adhdRiskScore / 100;
+    // Higher ADHD risk = more energy variability (reduced from 0.5 to 0.3)
+    const variability = 0.05 + adhdImpact * 0.1;
+    energyLevel *= (1 + variability * Math.sin(hour * Math.PI * 2) * 0.3);
+  }
+  
+  // Convert to y-coordinate (flip because SVG y=0 is top)
+  return height - (energyLevel * height * 0.8) - height * 0.1;
+}
+
+// Helper function to get ultradian energy level at specific time
+function getUltradianEnergyAtTime(currentTime: Date, height: number = 128): number {
+  const hour = currentTime.getHours() + currentTime.getMinutes() / 60;
+  const totalMinutes = hour * 60;
+  
+  // Calculate multiple overlapping ultradian cycles
+  const primaryCycle = totalMinutes % 90; // 90-minute cycles
+  const secondaryCycle = totalMinutes % 120; // 120-minute cycles for variation
+  
+  // Primary 90-minute cycle
+  let primaryEnergy = 0.5;
+  if (primaryCycle <= 60) {
+    const progress = primaryCycle / 60;
+    primaryEnergy = 0.3 + 0.4 * Math.sin(progress * Math.PI);
+  } else {
+    const progress = (primaryCycle - 60) / 30;
+    primaryEnergy = 0.7 - 0.2 * Math.sin(progress * Math.PI);
+  }
+  
+  // Secondary 120-minute cycle for complexity
+  const secondaryEnergy = 0.5 + 0.1 * Math.sin((secondaryCycle / 120) * Math.PI * 2);
+  
+  // Combine cycles
+  const combinedEnergy = (primaryEnergy * 0.8 + secondaryEnergy * 0.2);
+  
+  // Convert to y-coordinate with reduced amplitude for secondary wave
+  return height/2 + (combinedEnergy - 0.5) * height * 0.4;
+}
+
+// Helper function to get circadian energy value (0-1) for percentage calculation
+function getCircadianEnergyValue(currentTime: Date, realDataAnalysis?: any): number {
+  const hour = currentTime.getHours() + currentTime.getMinutes() / 60;
+  
+  // Personal wake/sleep times from health data or defaults
+  const personalWakeTime = realDataAnalysis?.personalizedWakeTime || 7; // 7 AM default
+  const personalSleepTime = realDataAnalysis?.personalizedSleepTime || 23; // 11 PM default
+  
+  // Calculate energy level based on circadian rhythm
+  let energyLevel = 0.5; // baseline
+  
+  // Morning rise (wake time to wake+4 hours)
+  if (hour >= personalWakeTime && hour <= personalWakeTime + 4) {
+    const progress = (hour - personalWakeTime) / 4;
+    energyLevel = 0.3 + 0.6 * Math.sin(progress * Math.PI / 2); // 0.3 to 0.9
+  }
+  // Day peak (wake+4 to wake+8 hours)
+  else if (hour > personalWakeTime + 4 && hour <= personalWakeTime + 8) {
+    energyLevel = 0.8 + 0.1 * Math.sin((hour - personalWakeTime - 4) * Math.PI / 2); // 0.8 to 0.9
+  }
+  // Afternoon dip (wake+8 to wake+10 hours)
+  else if (hour > personalWakeTime + 8 && hour <= personalWakeTime + 10) {
+    const progress = (hour - personalWakeTime - 8) / 2;
+    energyLevel = 0.9 - 0.2 * Math.sin(progress * Math.PI); // 0.9 to 0.7
+  }
+  // Evening recovery (wake+10 to sleep-2 hours)
+  else if (hour > personalWakeTime + 10 && hour <= personalSleepTime - 2) {
+    energyLevel = 0.7 + 0.1 * Math.sin((hour - personalWakeTime - 10) * Math.PI / 4); // 0.7 to 0.8
+  }
+  // Evening decline (sleep-2 to sleep)
+  else if (hour > personalSleepTime - 2 && hour <= personalSleepTime) {
+    const progress = (hour - (personalSleepTime - 2)) / 2;
+    energyLevel = 0.8 - 0.5 * Math.sin(progress * Math.PI / 2); // 0.8 to 0.3
+  }
+  // Night/sleep (sleep to wake)
+  else {
+    // Handle wrap-around for sleep period
+    let sleepProgress = 0;
+    if (hour > personalSleepTime) {
+      sleepProgress = (hour - personalSleepTime) / (24 - personalSleepTime + personalWakeTime);
+    } else {
+      sleepProgress = (24 - personalSleepTime + hour) / (24 - personalSleepTime + personalWakeTime);
+    }
+    energyLevel = 0.1 + 0.2 * Math.sin(sleepProgress * Math.PI); // 0.1 to 0.3
+  }
+  
+  // ADHD adjustments if available (reduced impact for smoother curve)
+  if (realDataAnalysis?.adhdRiskScore) {
+    const adhdImpact = realDataAnalysis.adhdRiskScore / 100;
+    // Higher ADHD risk = more energy variability (reduced from 0.5 to 0.3)
+    const variability = 0.05 + adhdImpact * 0.1;
+    energyLevel *= (1 + variability * Math.sin(hour * Math.PI * 2) * 0.3);
+  }
+  
+  return Math.max(0, Math.min(1, energyLevel));
+}
+
+// Helper function to get ultradian energy value (0-1) for percentage calculation
+function getUltradianEnergyValue(currentTime: Date): number {
+  const hour = currentTime.getHours() + currentTime.getMinutes() / 60;
+  const totalMinutes = hour * 60;
+  
+  // Calculate multiple overlapping ultradian cycles
+  const primaryCycle = totalMinutes % 90; // 90-minute cycles
+  const secondaryCycle = totalMinutes % 120; // 120-minute cycles for variation
+  
+  // Primary 90-minute cycle
+  let primaryEnergy = 0.5;
+  if (primaryCycle <= 60) {
+    const progress = primaryCycle / 60;
+    primaryEnergy = 0.3 + 0.4 * Math.sin(progress * Math.PI);
+  } else {
+    const progress = (primaryCycle - 60) / 30;
+    primaryEnergy = 0.7 - 0.2 * Math.sin(progress * Math.PI);
+  }
+  
+  // Secondary 120-minute cycle for complexity
+  const secondaryEnergy = 0.5 + 0.1 * Math.sin((secondaryCycle / 120) * Math.PI * 2);
+  
+  // Combine cycles
+  const combinedEnergy = (primaryEnergy * 0.8 + secondaryEnergy * 0.2);
+  
+  return Math.max(0, Math.min(1, combinedEnergy));
 }
