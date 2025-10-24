@@ -2,6 +2,9 @@
 use serde::{Serialize, Deserialize};
 use tauri::{AppHandle, Manager};
 use chrono::Timelike;
+use std::sync::{Arc, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
+use tokio::time::{interval, Duration};
 
 mod healthkit_ffi;
 
@@ -135,6 +138,102 @@ fn write_widget_data(data: WidgetCycleData) -> Result<(), String> {
     }
 }
 
+// Tray updater state manager
+struct TrayUpdaterState {
+    is_running: Arc<AtomicBool>,
+}
+
+impl TrayUpdaterState {
+    fn new() -> Self {
+        Self {
+            is_running: Arc::new(AtomicBool::new(false)),
+        }
+    }
+}
+
+#[tauri::command]
+async fn start_tray_updater(app: AppHandle, state: tauri::State<'_, Arc<Mutex<TrayUpdaterState>>>) -> Result<(), String> {
+    let state_lock = state.lock().map_err(|e| format!("Failed to lock state: {}", e))?;
+
+    // Check if already running
+    if state_lock.is_running.load(Ordering::Relaxed) {
+        return Ok(()); // Already running
+    }
+
+    state_lock.is_running.store(true, Ordering::Relaxed);
+    let is_running = Arc::clone(&state_lock.is_running);
+
+    // Release lock before spawning task
+    drop(state_lock);
+
+    // Spawn background task
+    tokio::spawn(async move {
+        let mut ticker = interval(Duration::from_secs(1));
+
+        while is_running.load(Ordering::Relaxed) {
+            ticker.tick().await;
+
+            // Calculate tray title
+            let now = chrono::Local::now();
+            let total_minutes = now.hour() as f64 * 60.0 + now.minute() as f64 + now.second() as f64 / 60.0;
+            let cycle_position = total_minutes % 90.0;
+
+            // Determine energy phase
+            let energy_phase = if cycle_position <= 5.0 {
+                "transition"
+            } else if cycle_position <= 60.0 {
+                "high"
+            } else if cycle_position <= 65.0 {
+                "transition"
+            } else {
+                "low"
+            };
+
+            // Calculate time remaining
+            let time_remaining = if energy_phase == "high" || (energy_phase == "transition" && cycle_position <= 60.0) {
+                60.0 - cycle_position
+            } else {
+                90.0 - cycle_position
+            };
+
+            let minutes_left = time_remaining.floor() as i32;
+            let seconds_left = ((time_remaining - minutes_left as f64) * 60.0).floor() as i32;
+
+            // Determine phase icon (6-phase system)
+            let phase_arrow = if cycle_position <= 15.0 {
+                "↗"
+            } else if cycle_position <= 30.0 {
+                "↑"
+            } else if cycle_position <= 45.0 {
+                "🔥"
+            } else if cycle_position <= 60.0 {
+                "⚡"
+            } else if cycle_position <= 75.0 {
+                "↘"
+            } else {
+                "😴"
+            };
+
+            // Format title
+            let title = format!("{} {:02}:{:02}", phase_arrow, minutes_left, seconds_left);
+
+            // Update tray title
+            if let Some(tray) = app.tray_by_id("main") {
+                let _ = tray.set_title(Some(title));
+            }
+        }
+    });
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn stop_tray_updater(state: tauri::State<'_, Arc<Mutex<TrayUpdaterState>>>) -> Result<(), String> {
+    let state_lock = state.lock().map_err(|e| format!("Failed to lock state: {}", e))?;
+    state_lock.is_running.store(false, Ordering::Relaxed);
+    Ok(())
+}
+
 #[tauri::command]
 fn get_widget_data() -> WidgetCycleData {
     let current_time = chrono::Utc::now();
@@ -233,6 +332,7 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .manage(Arc::new(Mutex::new(TrayUpdaterState::new())))
         .invoke_handler(tauri::generate_handler![
             greet,
             calculate_intradaily_variability,
@@ -246,7 +346,9 @@ pub fn run() {
             hide_menubar_window,
             update_tray_title,
             get_widget_data,
-            write_widget_data
+            write_widget_data,
+            start_tray_updater,
+            stop_tray_updater
         ])
         .setup(|app| {
             let show_item = MenuItem::with_id(app, "show", "Show Dashboard", true, None::<&str>)?;
@@ -280,6 +382,87 @@ pub fn run() {
                     }
                 })
                 .build(app)?;
+
+            // Auto-start the Rust-based tray updater
+            let app_handle = app.handle().clone();
+            let state = app.state::<Arc<Mutex<TrayUpdaterState>>>().inner().clone();
+
+            // Start the tray updater in a background task
+            tauri::async_runtime::spawn(async move {
+                let state_lock = match state.lock() {
+                    Ok(lock) => lock,
+                    Err(_) => return,
+                };
+
+                // Check if already running
+                if state_lock.is_running.load(Ordering::Relaxed) {
+                    return;
+                }
+
+                state_lock.is_running.store(true, Ordering::Relaxed);
+                let is_running = Arc::clone(&state_lock.is_running);
+
+                // Release lock before spawning task
+                drop(state_lock);
+
+                // Spawn background task
+                tokio::spawn(async move {
+                    let mut ticker = tokio::time::interval(tokio::time::Duration::from_secs(1));
+
+                    while is_running.load(Ordering::Relaxed) {
+                        ticker.tick().await;
+
+                        // Calculate tray title
+                        let now = chrono::Local::now();
+                        let total_minutes = now.hour() as f64 * 60.0 + now.minute() as f64 + now.second() as f64 / 60.0;
+                        let cycle_position = total_minutes % 90.0;
+
+                        // Determine energy phase
+                        let energy_phase = if cycle_position <= 5.0 {
+                            "transition"
+                        } else if cycle_position <= 60.0 {
+                            "high"
+                        } else if cycle_position <= 65.0 {
+                            "transition"
+                        } else {
+                            "low"
+                        };
+
+                        // Calculate time remaining
+                        let time_remaining = if energy_phase == "high" || (energy_phase == "transition" && cycle_position <= 60.0) {
+                            60.0 - cycle_position
+                        } else {
+                            90.0 - cycle_position
+                        };
+
+                        let minutes_left = time_remaining.floor() as i32;
+                        let seconds_left = ((time_remaining - minutes_left as f64) * 60.0).floor() as i32;
+
+                        // Determine phase icon (6-phase system)
+                        let phase_arrow = if cycle_position <= 15.0 {
+                            "↗"
+                        } else if cycle_position <= 30.0 {
+                            "↑"
+                        } else if cycle_position <= 45.0 {
+                            "🔥"
+                        } else if cycle_position <= 60.0 {
+                            "⚡"
+                        } else if cycle_position <= 75.0 {
+                            "↘"
+                        } else {
+                            "😴"
+                        };
+
+                        // Format title
+                        let title = format!("{} {:02}:{:02}", phase_arrow, minutes_left, seconds_left);
+
+                        // Update tray title
+                        if let Some(tray) = app_handle.tray_by_id("main") {
+                            let _ = tray.set_title(Some(title));
+                        }
+                    }
+                });
+            });
 
             Ok(())
         })

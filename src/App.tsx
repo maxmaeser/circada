@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useAppStore } from "@/lib/store"
-import { liveHealthKit, LiveCycleAdjustment } from "@/services/liveHealthKit"
-import { trayUpdater } from "@/services/trayUpdater"
+// import { liveHealthKit, LiveCycleAdjustment } from "@/services/liveHealthKit"
+// import { trayUpdater } from "@/services/trayUpdater"
 import { widgetDataProvider } from "@/services/widgetDataProvider"
 import UltradianDashboard from "@/components/UltradianDashboard"
 import PredictiveAnalytics from "@/components/PredictiveAnalytics"
@@ -18,68 +18,67 @@ export default function App() {
   const [heartRate, setHeartRate] = useState<number>(75)
   const [realDataAnalysis] = useState<any>(null)
   const [showRealData, setShowRealData] = useState(false) // Switch to true to enable real data
-  const [isLiveHealthKit, setIsLiveHealthKit] = useState(false)
-  const [liveAdjustment] = useState(new LiveCycleAdjustment())
+  // const [isLiveHealthKit, setIsLiveHealthKit] = useState(false)
+  // const [liveAdjustment] = useState(new LiveCycleAdjustment())
 
   useEffect(() => {
     // Set initial time immediately
     setCurrentTime(new Date())
-    
-    // Initialize live HealthKit
-    const initLiveHealthKit = async () => {
-      try {
-        const isAvailable = await liveHealthKit.isAvailable();
-        if (isAvailable) {
-          const hasPermissions = await liveHealthKit.requestPermissions();
-          if (hasPermissions) {
-            await liveHealthKit.startMonitoring();
-            setIsLiveHealthKit(true);
-            
-            // Set up live heart rate listener
-            const unlistenHeartRate = await liveHealthKit.onHeartRateUpdate((data) => {
-              setHeartRate(Math.round(data.rate));
-              liveAdjustment.updateBaseline(data.rate);
-            });
-            
-            return () => {
-              unlistenHeartRate();
-              liveHealthKit.stopMonitoring();
-            };
-          }
-        }
-      } catch (error) {
-        console.error('Failed to initialize live HealthKit:', error);
-      }
-    };
-    
-    initLiveHealthKit();
-    
-    // Start tray updater and widget data provider
-    trayUpdater.start();
+
+    // NOTE: Live HealthKit integration disabled - currently using simulated heart rate
+    // To re-enable: uncomment the imports and this initialization block
+    // const initLiveHealthKit = async () => {
+    //   try {
+    //     const isAvailable = await liveHealthKit.isAvailable();
+    //     if (isAvailable) {
+    //       const hasPermissions = await liveHealthKit.requestPermissions();
+    //       if (hasPermissions) {
+    //         await liveHealthKit.startMonitoring();
+    //         setIsLiveHealthKit(true);
+    //
+    //         // Set up live heart rate listener
+    //         const unlistenHeartRate = await liveHealthKit.onHeartRateUpdate((data) => {
+    //           setHeartRate(Math.round(data.rate));
+    //           liveAdjustment.updateBaseline(data.rate);
+    //         });
+    //
+    //         return () => {
+    //           unlistenHeartRate();
+    //           liveHealthKit.stopMonitoring();
+    //         };
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.error('Failed to initialize live HealthKit:', error);
+    //   }
+    // };
+    //
+    // initLiveHealthKit();
+
+    // Start widget data provider
+    // NOTE: Tray updater now runs automatically in Rust backend
     widgetDataProvider.start();
     
     const timer = setInterval(() => {
       const now = new Date()
       setCurrentTime(now)
-      
-      // Only simulate heart rate if not using live data
-      if (!isLiveHealthKit) {
-        const baseHR = 70;
-        const cyclePosition = (now.getHours() * 60 + now.getMinutes()) % 90;
-        const cycleIntensity = cyclePosition <= 60 ? 
-          Math.sin((cyclePosition / 60) * Math.PI) : 
-          0.3 + 0.2 * Math.sin(((cyclePosition - 60) / 30) * Math.PI);
-        
-        const variation = (Math.random() - 0.5) * 10;
-        setHeartRate(Math.round(baseHR + cycleIntensity * 20 + variation));
-      }
+
+      // Simulate heart rate based on ultradian cycle
+      const baseHR = 70;
+      const cyclePosition = (now.getHours() * 60 + now.getMinutes()) % 90;
+      const cycleIntensity = cyclePosition <= 60 ?
+        Math.sin((cyclePosition / 60) * Math.PI) :
+        0.3 + 0.2 * Math.sin(((cyclePosition - 60) / 30) * Math.PI);
+
+      const variation = (Math.random() - 0.5) * 10;
+      setHeartRate(Math.round(baseHR + cycleIntensity * 20 + variation));
     }, 1000)
+
     return () => {
       clearInterval(timer);
-      trayUpdater.stop();
       widgetDataProvider.stop();
     };
-  }, [setCurrentTime, isLiveHealthKit, liveAdjustment])
+  }, [setCurrentTime])
 
   // const handleHealthDataLoaded = (analysis: any) => {
   //   setRealDataAnalysis(analysis);
@@ -113,12 +112,7 @@ export default function App() {
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter">Circada</h1>
-                {isLiveHealthKit && (
-                  <div className="flex items-center gap-1 px-2 py-1 bg-green-500/20 text-green-300 rounded-full text-xs">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    Live
-                  </div>
-                )}
+                {/* Live indicator removed - currently using simulated data */}
               </div>
               <p className="text-sm md:text-lg text-muted-foreground">
                 Your ultradian rhythm at a glance

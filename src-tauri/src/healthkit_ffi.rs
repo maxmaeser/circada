@@ -14,7 +14,7 @@ static mut HEART_RATE_SENDER: Option<Sender<HeartRateData>> = None;
 static mut APP_HANDLE: Option<AppHandle> = None;
 
 // Try to use actual Swift FFI functions, fall back to mock if unavailable
-#[cfg(target_os = "macos")]
+#[cfg(all(target_os = "macos", not(feature = "mock_healthkit")))]
 extern "C" {
     #[link_name = "healthkit_request_permissions"]
     fn swift_healthkit_request_permissions() -> bool;
@@ -28,38 +28,38 @@ extern "C" {
     fn swift_healthkit_get_current_hr() -> f64;
 }
 
-// Mock implementations for development and non-macOS platforms
-#[cfg(not(target_os = "macos"))]
-extern "C" fn healthkit_request_permissions() -> bool {
+// Mock implementations for non-macOS platforms or when Swift compilation fails
+#[cfg(any(not(target_os = "macos"), feature = "mock_healthkit"))]
+fn healthkit_request_permissions() -> bool {
     true // Mock: always return true
 }
 
-#[cfg(not(target_os = "macos"))]
-extern "C" fn healthkit_start_monitoring() -> bool {
+#[cfg(any(not(target_os = "macos"), feature = "mock_healthkit"))]
+fn healthkit_start_monitoring() -> bool {
     true // Mock: always return true
 }
 
-#[cfg(not(target_os = "macos"))]
-extern "C" fn healthkit_stop_monitoring() {
+#[cfg(any(not(target_os = "macos"), feature = "mock_healthkit"))]
+fn healthkit_stop_monitoring() {
     // Mock: no-op
 }
 
-#[cfg(not(target_os = "macos"))]
-extern "C" fn healthkit_set_callback(_callback: extern "C" fn(f64, u64)) {
+#[cfg(any(not(target_os = "macos"), feature = "mock_healthkit"))]
+fn healthkit_set_callback(_callback: extern "C" fn(f64, u64)) {
     // Mock: no-op
 }
 
-#[cfg(not(target_os = "macos"))]
-extern "C" fn healthkit_get_current_hr() -> f64 {
+#[cfg(any(not(target_os = "macos"), feature = "mock_healthkit"))]
+fn healthkit_get_current_hr() -> f64 {
     // Mock: return simulated heart rate
     use std::time::{SystemTime, UNIX_EPOCH};
     let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
     70.0 + (now % 10) as f64 // Simple variation between 70-80 bpm
 }
 
-// macOS implementations that try Swift first, fall back to mock
-#[cfg(target_os = "macos")]
-extern "C" fn healthkit_request_permissions() -> bool {
+// macOS implementations that use Swift when available
+#[cfg(all(target_os = "macos", not(feature = "mock_healthkit")))]
+fn healthkit_request_permissions() -> bool {
     // Try Swift implementation first
     unsafe {
         match std::panic::catch_unwind(|| swift_healthkit_request_permissions()) {
@@ -73,8 +73,8 @@ extern "C" fn healthkit_request_permissions() -> bool {
     }
 }
 
-#[cfg(target_os = "macos")]
-extern "C" fn healthkit_start_monitoring() -> bool {
+#[cfg(all(target_os = "macos", not(feature = "mock_healthkit")))]
+fn healthkit_start_monitoring() -> bool {
     unsafe {
         match std::panic::catch_unwind(|| swift_healthkit_start_monitoring()) {
             Ok(result) => result,
@@ -86,22 +86,22 @@ extern "C" fn healthkit_start_monitoring() -> bool {
     }
 }
 
-#[cfg(target_os = "macos")]
-extern "C" fn healthkit_stop_monitoring() {
+#[cfg(all(target_os = "macos", not(feature = "mock_healthkit")))]
+fn healthkit_stop_monitoring() {
     unsafe {
         let _ = std::panic::catch_unwind(|| swift_healthkit_stop_monitoring());
     }
 }
 
-#[cfg(target_os = "macos")]
-extern "C" fn healthkit_set_callback(callback: extern "C" fn(f64, u64)) {
+#[cfg(all(target_os = "macos", not(feature = "mock_healthkit")))]
+fn healthkit_set_callback(callback: extern "C" fn(f64, u64)) {
     unsafe {
         let _ = std::panic::catch_unwind(|| swift_healthkit_set_callback(callback));
     }
 }
 
-#[cfg(target_os = "macos")]
-extern "C" fn healthkit_get_current_hr() -> f64 {
+#[cfg(all(target_os = "macos", not(feature = "mock_healthkit")))]
+fn healthkit_get_current_hr() -> f64 {
     unsafe {
         match std::panic::catch_unwind(|| swift_healthkit_get_current_hr()) {
             Ok(result) => result,
