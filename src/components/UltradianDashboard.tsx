@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from './ui/card';
+import MagnifyingGlass from './MagnifyingGlass';
 // import { Badge } from './ui/badge';
 // import { Activity, Zap } from 'lucide-react';
 
@@ -20,6 +21,8 @@ interface CycleState {
 }
 
 export default function UltradianDashboard({ currentTime, heartRate, realDataAnalysis }: UltradianDashboardProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
+
   const [cycleState, setCycleState] = useState<CycleState>({
     cyclePosition: 0,
     energyPhase: 'high',
@@ -34,6 +37,7 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
     x: number;
     y: number;
     svgX: number;
+    svgY: number;
     time: string;
     circadianIntensity: number;
     ultradianIntensity: number;
@@ -42,6 +46,7 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
     x: 0,
     y: 0,
     svgX: 0,
+    svgY: 0,
     time: '',
     circadianIntensity: 0,
     ultradianIntensity: 0,
@@ -426,40 +431,43 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
               </div>
             </div>
 
-            <div className="relative h-24 sm:h-32 bg-zinc-900 rounded-lg overflow-hidden border border-zinc-700/50 shadow-2xl">
+            <div className="relative h-24 sm:h-32 bg-zinc-900 rounded-lg overflow-visible border border-zinc-700/50 shadow-2xl">
               {/* SVG Wave Visualization */}
-              <svg 
-                width="100%" 
-                height="100%" 
-                viewBox="0 0 1000 128" 
+              <svg
+                ref={svgRef}
+                width="100%"
+                height="100%"
+                viewBox="0 0 1000 128"
                 className="absolute inset-0 cursor-crosshair"
                 preserveAspectRatio="none"
                 onMouseMove={(e) => {
                   const svgRect = e.currentTarget.getBoundingClientRect();
                   const mouseX = e.clientX - svgRect.left;
                   const mouseY = e.clientY - svgRect.top;
-                  
+
                   // Convert to SVG coordinates
                   const svgX = (mouseX / svgRect.width) * 1000;
-                  
+                  const svgY = (mouseY / svgRect.height) * 128;
+
                   // Calculate time from x position
                   const hourFloat = (svgX / 1000) * 24;
                   const hour = Math.floor(hourFloat);
                   const minute = Math.floor((hourFloat - hour) * 60);
                   const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-                  
+
                   // Create a temporary date object for this time
                   const hoverTime = new Date(currentTime);
                   hoverTime.setHours(hour, minute, 0, 0);
-                  
+
                   // Calculate energy intensities at this time using raw energy values
                   const circadianEnergy = getCircadianEnergyValue(hoverTime, realDataAnalysis);
                   const ultradianEnergy = getUltradianEnergyValue(hoverTime);
-                  
+
                   setHoverData({
                     x: mouseX,
                     y: mouseY,
                     svgX: svgX,
+                    svgY: svgY,
                     time: timeString,
                     circadianIntensity: circadianEnergy * 100,
                     ultradianIntensity: ultradianEnergy * 100,
@@ -476,27 +484,35 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
                     {/* Night (sleep) - higher opacity purple/indigo */}
                     <stop offset="0%" stopColor="rgba(99, 102, 241, 0.15)" />
                     <stop offset="4%" stopColor="rgba(99, 102, 241, 0.15)" />
-                    
+
                     {/* Early morning - slight decrease */}
                     <stop offset="20%" stopColor="rgba(139, 92, 246, 0.12)" />
                     <stop offset="25%" stopColor="rgba(139, 92, 246, 0.08)" />
-                    
+
                     {/* Morning/day - minimal opacity (high energy) */}
                     <stop offset="30%" stopColor="rgba(99, 102, 241, 0.04)" />
                     <stop offset="35%" stopColor="rgba(99, 102, 241, 0.03)" />
                     <stop offset="50%" stopColor="rgba(99, 102, 241, 0.03)" />
                     <stop offset="60%" stopColor="rgba(99, 102, 241, 0.04)" />
-                    
+
                     {/* Evening wind down - increasing opacity */}
                     <stop offset="70%" stopColor="rgba(139, 92, 246, 0.06)" />
                     <stop offset="80%" stopColor="rgba(139, 92, 246, 0.10)" />
-                    
+
                     {/* Night (sleep) - higher opacity */}
                     <stop offset="90%" stopColor="rgba(99, 102, 241, 0.13)" />
                     <stop offset="100%" stopColor="rgba(99, 102, 241, 0.15)" />
                   </linearGradient>
+
+                  {/* Clip path for rounded corners */}
+                  <clipPath id="roundedCorners">
+                    <rect x="0" y="0" width="1000" height="128" rx="12" ry="12" />
+                  </clipPath>
                 </defs>
-                <rect width="100%" height="100%" fill="url(#energyGradient)" />
+
+                {/* Background and waves with clipping for rounded corners */}
+                <g clipPath="url(#roundedCorners)">
+                  <rect width="100%" height="100%" fill="url(#energyGradient)" />
                 
                 {/* Circadian rhythm wave (main wave) */}
                 <path
@@ -519,20 +535,21 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
                 {/* Hour markers */}
                 {Array.from({ length: 24 }, (_, i) => {
                   const x = (i / 24) * 1000;
-                  
+
                   return (
-                    <line 
+                    <line
                       key={i}
-                      x1={x} 
-                      y1="0" 
-                      x2={x} 
-                      y2="128" 
-                      stroke="rgba(255,255,255,0.08)" 
-                      strokeWidth="1" 
+                      x1={x}
+                      y1="0"
+                      x2={x}
+                      y2="128"
+                      stroke="rgba(255,255,255,0.08)"
+                      strokeWidth="1"
                     />
                   );
                 })}
-                
+                </g>
+
                 {/* Current time indicator */}
                 <line
                   x1={((currentTime.getHours() * 60 + currentTime.getMinutes()) / (24 * 60)) * 1000}
@@ -552,15 +569,85 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
                   strokeWidth="2"
                   className="drop-shadow-lg animate-pulse"
                 />
-                
-                {/* Hover vertical line */}
+
+                {/* Magnifying Glass */}
+                {hoverData.visible && (
+                  <MagnifyingGlass
+                    x={hoverData.svgX}
+                    y={hoverData.svgY}
+                    width={180}
+                    height={120}
+                    zoom={1.8}
+                    svgWidth={1000}
+                    svgHeight={128}
+                  >
+                    {/* Energy gradient background */}
+                    <rect width="100%" height="100%" fill="url(#energyGradient)" />
+
+                    {/* Circadian rhythm wave */}
+                    <path
+                      d={generateCircadianWave(1000, 128, currentTime, realDataAnalysis)}
+                      fill="none"
+                      stroke="rgba(34, 197, 94, 0.9)"
+                      strokeWidth="2.5"
+                      className="drop-shadow-lg"
+                    />
+
+                    {/* Ultradian rhythm wave */}
+                    <path
+                      d={generateUltradianWave(1000, 128, currentTime)}
+                      fill="none"
+                      stroke="rgba(59, 130, 246, 0.5)"
+                      strokeWidth="2"
+                      className="drop-shadow-md"
+                    />
+
+                    {/* Hour markers */}
+                    {Array.from({ length: 24 }, (_, i) => {
+                      const x = (i / 24) * 1000;
+                      return (
+                        <line
+                          key={i}
+                          x1={x}
+                          y1="0"
+                          x2={x}
+                          y2="128"
+                          stroke="rgba(255,255,255,0.12)"
+                          strokeWidth="1"
+                        />
+                      );
+                    })}
+
+                    {/* Current time indicator */}
+                    <line
+                      x1={((currentTime.getHours() * 60 + currentTime.getMinutes()) / (24 * 60)) * 1000}
+                      y1="-2"
+                      x2={((currentTime.getHours() * 60 + currentTime.getMinutes()) / (24 * 60)) * 1000}
+                      y2="130"
+                      stroke="white"
+                      strokeWidth="2"
+                      className="drop-shadow-lg"
+                    />
+                    <circle
+                      cx={((currentTime.getHours() * 60 + currentTime.getMinutes()) / (24 * 60)) * 1000}
+                      cy={getCircadianEnergyAtTime(currentTime, realDataAnalysis, 128)}
+                      r="5"
+                      fill="white"
+                      stroke="rgba(34, 197, 94, 0.5)"
+                      strokeWidth="2"
+                      className="drop-shadow-lg"
+                    />
+                  </MagnifyingGlass>
+                )}
+
+                {/* Hover vertical line - rendered on top */}
                 {hoverData.visible && (
                   <line
                     x1={hoverData.svgX}
                     y1="-2"
                     x2={hoverData.svgX}
                     y2="130"
-                    stroke="rgba(156, 163, 175, 0.7)"
+                    stroke="rgba(156, 163, 175, 0.45)"
                     strokeWidth="1"
                     strokeDasharray="3,3"
                     className="pointer-events-none drop-shadow-sm"
@@ -596,13 +683,34 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
                 })}
               </div>
               
-              {/* Hover tooltip - positioned inside the container but above content */}
+              {/* Hover tooltip - positioned to the left of magnifier */}
               {hoverData.visible && (
-                <div 
+                <div
                   className="absolute z-10 bg-zinc-800/90 backdrop-blur-sm border border-zinc-600/80 rounded-lg p-3 shadow-2xl pointer-events-none whitespace-nowrap"
                   style={{
-                    left: hoverData.x > 300 ? hoverData.x - 140 : hoverData.x + 10,
-                    top: Math.max(10, hoverData.y - 90),
+                    left: (() => {
+                      if (!svgRef.current) return hoverData.x + 10; // fallback
+
+                      const svgPixelWidth = svgRef.current.getBoundingClientRect().width;
+                      const magnifierPixelWidth = (180 / 1000) * svgPixelWidth;
+                      const magnifierLeftEdge = hoverData.x - magnifierPixelWidth / 2;
+                      const tooltipWidth = 140; // approximate width
+                      const gap = 10; // gap between tooltip and magnifier
+                      const tooltipLeft = magnifierLeftEdge - tooltipWidth - gap;
+
+                      // If tooltip goes off left edge, position to right of magnifier instead
+                      if (tooltipLeft < 10) {
+                        const magnifierRightEdge = hoverData.x + magnifierPixelWidth / 2;
+                        return magnifierRightEdge + gap;
+                      }
+
+                      return tooltipLeft;
+                    })(),
+                    top: (() => {
+                      // Center tooltip vertically on cursor
+                      const tooltipHeight = 80; // approximate height
+                      return Math.max(10, hoverData.y - tooltipHeight / 2);
+                    })(),
                   }}
                 >
                   <div className="text-white text-sm font-medium mb-2">
