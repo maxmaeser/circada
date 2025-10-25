@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { Card, CardContent } from './ui/card';
 import MagnifyingGlass from './MagnifyingGlass';
 // import { Badge } from './ui/badge';
 // import { Activity, Zap } from 'lucide-react';
@@ -156,17 +155,17 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
     
     // Return icon based on 6-phase system with adaptive coloring
     if (cyclePosition <= 15) {
-      return <span className={`text-xl font-bold ${iconColor} drop-shadow-sm`}>↗</span>; // Rising (0-15 min) - Building energy
+      return <span className={`text-2xl sm:text-3xl font-bold ${iconColor} drop-shadow-sm`}>↗</span>; // Rising (0-15 min) - Building energy
     } else if (cyclePosition <= 30) {
-      return <span className={`text-xl font-bold ${iconColor} drop-shadow-sm`}>↑</span>; // Climbing (15-30 min) - Strong ascent
+      return <span className={`text-2xl sm:text-3xl font-bold ${iconColor} drop-shadow-sm`}>↑</span>; // Climbing (15-30 min) - Strong ascent
     } else if (cyclePosition <= 45) {
-      return <span className="text-xl drop-shadow-sm">🔥</span>; // Peak (30-45 min) - Maximum energy
+      return <span className="text-2xl sm:text-3xl drop-shadow-sm">🔥</span>; // Peak (30-45 min) - Maximum energy
     } else if (cyclePosition <= 60) {
-      return <span className="text-xl drop-shadow-sm">⚡</span>; // Flow (45-60 min) - Optimal performance
+      return <span className="text-2xl sm:text-3xl drop-shadow-sm">⚡</span>; // Flow (45-60 min) - Optimal performance
     } else if (cyclePosition <= 75) {
-      return <span className={`text-xl font-bold ${iconColor} drop-shadow-sm`}>↘</span>; // Declining (60-75 min) - Energy decreasing
+      return <span className={`text-2xl sm:text-3xl font-bold ${iconColor} drop-shadow-sm`}>↘</span>; // Declining (60-75 min) - Energy decreasing
     } else {
-      return <span className="text-xl drop-shadow-sm">😴</span>; // Resting (75-90 min) - Recovery phase
+      return <span className="text-2xl sm:text-3xl drop-shadow-sm">😴</span>; // Resting (75-90 min) - Recovery phase
     }
   };
 
@@ -243,65 +242,71 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Main Ultradian Dashboard */}
-      <Card className="!bg-gradient-to-br from-zinc-800 to-zinc-900 !border-zinc-700 overflow-hidden">
-        <CardContent className="p-4 sm:p-6 lg:p-8">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold !text-white">Ultradian Cycle</h2>
-              <p className="text-xs sm:text-sm !text-zinc-400">90-minute energy rhythm</p>
-            </div>
-            <div className="sm:text-right">
-              <div className="text-base sm:text-lg font-mono !text-white">Cycle {cycleState.cycleNumber}/16</div>
-              <div className="text-xs sm:text-sm !text-zinc-400">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-            </div>
-          </div>
+    <div className="relative w-full space-y-6 sm:space-y-8">
+      {/* Meta Info - Top Right Corner */}
+      <div className="absolute top-0 right-0 text-right opacity-75">
+        <div className="text-xs !text-zinc-500 font-mono">Cycle {cycleState.cycleNumber}/16</div>
+        <div className="text-xs !text-zinc-500 font-mono">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+      </div>
 
-          {/* Current State */}
-          <div className="grid grid-cols-2 gap-3 sm:gap-6 mb-6 sm:mb-8">
-            {/* Energy Phase */}
-            <div className="text-center">
+      {/* Sections Container */}
+      <div className="space-y-6 sm:space-y-8">
+        {/* Ultradian Section */}
+        <div className="space-y-4 sm:space-y-6">
+        {/* Minimal Header */}
+        <h2 className="text-xs sm:text-sm font-medium !text-zinc-500">Ultradian Cycle</h2>
+
+          {/* Current State - 3 Row Layout */}
+          <div className="flex flex-col items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+            {/* Row 1: Icon and Timer */}
+            <div className="flex items-center justify-center gap-4 sm:gap-6">
+              {/* Icon */}
               <div
-                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full mx-auto mb-2 sm:mb-3 flex items-center justify-center text-white"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white"
                 style={{ backgroundColor: getEnergyColor(cycleState.energyPhase, cycleState.energyIntensity) }}
               >
                 {getPhaseIcon(cycleState.energyPhase)}
               </div>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
-                <span className="text-sm sm:text-lg font-semibold !text-white capitalize">{cycleState.energyPhase}</span>
-                <span className="text-xs sm:text-sm !text-zinc-400">{Math.round(cycleState.energyIntensity * 100)}%</span>
-              </div>
-              <div className="text-xs !text-zinc-500 hidden sm:block">
-                {(() => {
-                  const totalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes() + currentTime.getSeconds() / 60;
-                  const cyclePosition = totalMinutes % 90;
 
-                  if (cyclePosition <= 15) {
-                    return 'Warm up: Light tasks, planning, prepare for focus';
-                  } else if (cyclePosition <= 30) {
-                    return 'Building momentum: Start challenging work';
-                  } else if (cyclePosition <= 45) {
-                    return 'Peak time: Complex projects, creative work';
-                  } else if (cyclePosition <= 60) {
-                    return 'Prime focus: Deep work, important decisions';
-                  } else if (cyclePosition <= 75) {
-                    return 'Wind down: Finish tasks, review, organize';
-                  } else {
-                    return 'Rest time: Breaks, reflection, light admin';
-                  }
-                })()}
+              {/* Timer */}
+              <div className="text-4xl sm:text-5xl font-bold !text-white font-mono leading-none">
+                {String(Math.floor(cycleState.timeRemaining)).padStart(2, '0')}:{String(Math.floor(((cycleState.timeRemaining % 1) * 60))).padStart(2, '0')}
               </div>
             </div>
 
-            {/* Time Remaining */}
-            <div className="text-center">
-              <div className="text-2xl sm:text-4xl font-bold !text-white font-mono mb-1 sm:mb-2">
-                {String(Math.floor(cycleState.timeRemaining)).padStart(2, '0')}:{String(Math.floor(((cycleState.timeRemaining % 1) * 60))).padStart(2, '0')}
+            {/* Row 2: Phase Info | Next Phase Info */}
+            <div className="flex items-baseline justify-center gap-4 sm:gap-6 w-full">
+              <div className="flex flex-col items-center sm:flex-row sm:items-baseline sm:gap-2">
+                <span className="text-sm sm:text-base !text-zinc-400 capitalize leading-tight">{cycleState.energyPhase}</span>
+                <span className="text-sm sm:text-base !text-zinc-400 leading-tight">{Math.round(cycleState.energyIntensity * 100)}%</span>
               </div>
-              <div className="text-xs sm:text-sm !text-zinc-400">next phase</div>
-              <div className="text-xs sm:text-sm !text-zinc-500">{cycleState.nextPhaseTime}</div>
+
+              <div className="flex flex-col items-center sm:flex-row sm:items-baseline sm:gap-2">
+                <span className="text-sm sm:text-base !text-zinc-400 leading-tight">Next Phase</span>
+                <span className="text-sm sm:text-base !text-zinc-500 font-mono leading-tight">{cycleState.nextPhaseTime}</span>
+              </div>
+            </div>
+
+            {/* Row 3: Description */}
+            <div className="text-xs sm:text-sm !text-zinc-500 text-center max-w-md leading-relaxed">
+              {(() => {
+                const totalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes() + currentTime.getSeconds() / 60;
+                const cyclePosition = totalMinutes % 90;
+
+                if (cyclePosition <= 15) {
+                  return 'Warm up: Light tasks, planning, prepare for focus';
+                } else if (cyclePosition <= 30) {
+                  return 'Building momentum: Start challenging work';
+                } else if (cyclePosition <= 45) {
+                  return 'Peak time: Complex projects, creative work';
+                } else if (cyclePosition <= 60) {
+                  return 'Prime focus: Deep work, important decisions';
+                } else if (cyclePosition <= 75) {
+                  return 'Wind down: Finish tasks, review, organize';
+                } else {
+                  return 'Rest time: Breaks, reflection, light admin';
+                }
+              })()}
             </div>
           </div>
 
@@ -417,19 +422,12 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
               ))}
             </div>
           </div> */}
+        </div>
 
-          {/* Circadian Rhythm Bar */}
-          <div className="space-y-3 sm:space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-              <div>
-                <h3 className="text-base sm:text-lg font-semibold !text-white">Circadian Rhythm</h3>
-                <p className="text-xs sm:text-sm !text-zinc-400">24-hour cycle</p>
-              </div>
-              <div className="sm:text-right">
-                <div className="text-xs sm:text-sm font-mono !text-white">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                <div className="text-xs !text-zinc-400 hidden sm:block">Current time</div>
-              </div>
-            </div>
+        {/* Circadian Section */}
+        <div className="space-y-4 sm:space-y-6">
+          {/* Minimal Header */}
+          <h2 className="text-xs sm:text-sm font-medium !text-zinc-500">Circadian Rhythm</h2>
 
             <div className="relative h-24 sm:h-32 bg-zinc-900 rounded-lg overflow-visible border border-zinc-700/50 shadow-2xl">
               {/* SVG Wave Visualization */}
@@ -732,20 +730,19 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
               )}
             </div>
             
-            {/* Legend below the bar */}
-            <div className="flex justify-center gap-3 sm:gap-6 text-xs mt-2">
-              <div className="flex items-center gap-1">
-                <div className="w-2 sm:w-3 h-0.5 bg-green-400 rounded"></div>
-                <span className="text-zinc-400 text-xs">Circadian</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-2 sm:w-3 h-0.5 bg-blue-400 opacity-40 rounded"></div>
-                <span className="text-zinc-400 text-xs">Ultradian</span>
-              </div>
+          {/* Legend below the bar */}
+          <div className="flex justify-center gap-3 sm:gap-6 text-xs mt-2">
+            <div className="flex items-center gap-1">
+              <div className="w-2 sm:w-3 h-0.5 bg-green-400 rounded"></div>
+              <span className="text-zinc-400 text-xs">Circadian</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 sm:w-3 h-0.5 bg-blue-400 opacity-40 rounded"></div>
+              <span className="text-zinc-400 text-xs">Ultradian</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
