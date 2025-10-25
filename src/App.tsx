@@ -93,29 +93,29 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
+    <div className="min-h-screen bg-background text-foreground p-2 sm:p-4 md:p-8">
       {/* Burger Menu */}
-      <BurgerMenu 
+      <BurgerMenu
         showTestData={showRealData}
         onTestDataToggle={() => setShowRealData(!showRealData)}
       />
-      
-      <div className="max-w-6xl mx-auto space-y-8">
+
+      <div className="max-w-6xl mx-auto space-y-4 sm:space-y-8">
         {/* Header */}
         <header className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <img 
-              src="/circada-logo.png" 
-              alt="Circada Logo" 
-              className="w-16 h-16 md:w-20 md:h-20 rounded-xl"
+          <div className="flex items-center gap-2 sm:gap-4">
+            <img
+              src="/circada-logo.png"
+              alt="Circada Logo"
+              className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl"
             />
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter">Circada</h1>
+            <div className="space-y-1 sm:space-y-2">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter">Circada</h1>
                 {/* Live indicator removed - currently using simulated data */}
               </div>
-              <p className="text-sm md:text-lg text-muted-foreground">
-                Your ultradian rhythm at a glance
+              <p className="text-xs sm:text-sm md:text-lg text-muted-foreground">
+                Your ultradian rhythm
               </p>
             </div>
           </div>

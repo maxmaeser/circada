@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from './ui/card';
-import { Badge } from './ui/badge';
-import { Activity, Zap } from 'lucide-react';
+// import { Badge } from './ui/badge';
+// import { Activity, Zap } from 'lucide-react';
 
 interface UltradianDashboardProps {
   currentTime: Date;
@@ -238,41 +238,41 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Main Ultradian Dashboard */}
       <Card className="!bg-gradient-to-br from-zinc-800 to-zinc-900 !border-zinc-700 overflow-hidden">
-        <CardContent className="p-8">
+        <CardContent className="p-4 sm:p-6 lg:p-8">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
             <div>
-              <h2 className="text-2xl font-bold !text-white">Ultradian Cycle</h2>
-              <p className="text-sm !text-zinc-400">90-minute energy rhythm</p>
+              <h2 className="text-xl sm:text-2xl font-bold !text-white">Ultradian Cycle</h2>
+              <p className="text-xs sm:text-sm !text-zinc-400">90-minute energy rhythm</p>
             </div>
-            <div className="text-right">
-              <div className="text-lg font-mono !text-white">Cycle {cycleState.cycleNumber}/16</div>
-              <div className="text-sm !text-zinc-400">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+            <div className="sm:text-right">
+              <div className="text-base sm:text-lg font-mono !text-white">Cycle {cycleState.cycleNumber}/16</div>
+              <div className="text-xs sm:text-sm !text-zinc-400">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
             </div>
           </div>
 
           {/* Current State */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 mb-6 sm:mb-8">
             {/* Energy Phase */}
             <div className="text-center">
-              <div 
-                className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center text-white"
+              <div
+                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full mx-auto mb-2 sm:mb-3 flex items-center justify-center text-white"
                 style={{ backgroundColor: getEnergyColor(cycleState.energyPhase, cycleState.energyIntensity) }}
               >
                 {getPhaseIcon(cycleState.energyPhase)}
               </div>
-              <div className="flex items-baseline justify-center gap-2 mb-2 whitespace-nowrap">
-                <span className="text-lg font-semibold !text-white capitalize">{cycleState.energyPhase} Energy</span>
-                <span className="text-sm !text-zinc-400 flex-shrink-0">{Math.round(cycleState.energyIntensity * 100)}% int</span>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                <span className="text-sm sm:text-lg font-semibold !text-white capitalize">{cycleState.energyPhase}</span>
+                <span className="text-xs sm:text-sm !text-zinc-400">{Math.round(cycleState.energyIntensity * 100)}%</span>
               </div>
-              <div className="text-xs !text-zinc-500">
+              <div className="text-xs !text-zinc-500 hidden sm:block">
                 {(() => {
                   const totalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes() + currentTime.getSeconds() / 60;
                   const cyclePosition = totalMinutes % 90;
-                  
+
                   if (cyclePosition <= 15) {
                     return 'Warm up: Light tasks, planning, prepare for focus';
                   } else if (cyclePosition <= 30) {
@@ -292,38 +292,16 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
 
             {/* Time Remaining */}
             <div className="text-center">
-              <div className="text-4xl font-bold !text-white font-mono mb-2">
+              <div className="text-2xl sm:text-4xl font-bold !text-white font-mono mb-1 sm:mb-2">
                 {String(Math.floor(cycleState.timeRemaining)).padStart(2, '0')}:{String(Math.floor(((cycleState.timeRemaining % 1) * 60))).padStart(2, '0')}
               </div>
-              <div className="text-sm !text-zinc-400">until next phase</div>
-              <div className="text-sm !text-zinc-500">at {cycleState.nextPhaseTime}</div>
-            </div>
-
-            {/* Live Adjustments */}
-            <div className="text-center">
-              {heartRate ? (
-                <>
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Activity className="w-4 h-4 text-red-400" />
-                    <span className="text-lg font-semibold !text-white">{heartRate} bpm</span>
-                  </div>
-                  <Badge 
-                    className={`${cycleState.confidence > 0.8 ? '!bg-green-500/20 !text-green-300' : '!bg-yellow-500/20 !text-yellow-300'}`}
-                  >
-                    {Math.round(cycleState.confidence * 100)}% confidence
-                  </Badge>
-                </>
-              ) : (
-                <>
-                  <div className="text-lg !text-zinc-500 mb-2">No live data</div>
-                  <div className="text-sm !text-zinc-600">Using predicted rhythm</div>
-                </>
-              )}
+              <div className="text-xs sm:text-sm !text-zinc-400">next phase</div>
+              <div className="text-xs sm:text-sm !text-zinc-500">{cycleState.nextPhaseTime}</div>
             </div>
           </div>
 
           {/* Wave Visualization */}
-          <div className="relative h-32 mb-6">
+          <div className="relative h-20 sm:h-32 mb-4 sm:mb-6">
             <svg width="100%" height="100%" viewBox="0 0 800 120" className="overflow-visible">
               {/* Background grid */}
               <defs>
@@ -394,9 +372,8 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
             </svg>
           </div>
 
-          {/* Recommendation & 6-Hour Predictions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {/* Recommendation */}
+          {/* Recommendation & 6-Hour Predictions - Hidden for now */}
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="p-4 bg-zinc-800/50 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <Zap className="w-4 h-4 text-yellow-400" />
@@ -404,13 +381,12 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
               </div>
               <p className="text-sm !text-zinc-300">{getRecommendation(cycleState.energyPhase, cycleState.energyIntensity)}</p>
             </div>
-            
-            {/* 6-Hour Predictions */}
+
             <div className="space-y-3">
               {get6HourPredictions().slice(0, 2).map((prediction, index) => (
                 <div key={index} className="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-lg">
                   <div className="flex-shrink-0">
-                    <div 
+                    <div
                       className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm"
                       style={{ backgroundColor: getEnergyColor(prediction.phase, prediction.intensity) }}
                     >
@@ -435,22 +411,22 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* Circadian Rhythm Bar */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
               <div>
-                <h3 className="text-lg font-semibold !text-white">Circadian Rhythm</h3>
-                <p className="text-sm !text-zinc-400">24-hour energy cycle</p>
+                <h3 className="text-base sm:text-lg font-semibold !text-white">Circadian Rhythm</h3>
+                <p className="text-xs sm:text-sm !text-zinc-400">24-hour cycle</p>
               </div>
-              <div className="text-right">
-                <div className="text-sm font-mono !text-white">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                <div className="text-xs !text-zinc-400">Current time</div>
+              <div className="sm:text-right">
+                <div className="text-xs sm:text-sm font-mono !text-white">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                <div className="text-xs !text-zinc-400 hidden sm:block">Current time</div>
               </div>
             </div>
-            
-            <div className="relative h-32 bg-zinc-900 rounded-lg overflow-hidden border border-zinc-700/50 shadow-2xl">
+
+            <div className="relative h-24 sm:h-32 bg-zinc-900 rounded-lg overflow-hidden border border-zinc-700/50 shadow-2xl">
               {/* SVG Wave Visualization */}
               <svg 
                 width="100%" 
@@ -593,17 +569,22 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
               </svg>
               
               {/* Hour labels positioned outside SVG to prevent stretching */}
-              <div className="absolute bottom-2 left-0 right-0 flex justify-between px-1">
+              <div className="absolute bottom-1 sm:bottom-2 left-0 right-0 flex justify-between px-0.5 sm:px-1">
                 {Array.from({ length: 24 }, (_, i) => {
                   const hour = i;
                   const isCurrentHour = hour === currentTime.getHours();
-                  
+
+                  // Show every other hour on very small screens
+                  if (typeof window !== 'undefined' && window.innerWidth < 500 && i % 2 !== 0) {
+                    return <div key={i} style={{ flex: '1' }} />;
+                  }
+
                   return (
-                    <div 
+                    <div
                       key={i}
                       className={`text-xs font-mono ${isCurrentHour ? 'text-white font-bold' : 'text-zinc-300'}`}
-                      style={{ 
-                        fontSize: '11px',
+                      style={{
+                        fontSize: window.innerWidth < 500 ? '9px' : '11px',
                         width: '100%',
                         textAlign: 'center',
                         flex: '1'
@@ -644,14 +625,14 @@ export default function UltradianDashboard({ currentTime, heartRate, realDataAna
             </div>
             
             {/* Legend below the bar */}
-            <div className="flex justify-center gap-6 text-xs mt-2">
+            <div className="flex justify-center gap-3 sm:gap-6 text-xs mt-2">
               <div className="flex items-center gap-1">
-                <div className="w-3 h-0.5 bg-green-400 rounded"></div>
-                <span className="text-zinc-400">Circadian Rhythm</span>
+                <div className="w-2 sm:w-3 h-0.5 bg-green-400 rounded"></div>
+                <span className="text-zinc-400 text-xs">Circadian</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-3 h-0.5 bg-blue-400 opacity-40 rounded"></div>
-                <span className="text-zinc-400">Ultradian Cycles</span>
+                <div className="w-2 sm:w-3 h-0.5 bg-blue-400 opacity-40 rounded"></div>
+                <span className="text-zinc-400 text-xs">Ultradian</span>
               </div>
             </div>
           </div>
