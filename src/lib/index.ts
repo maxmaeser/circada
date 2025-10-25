@@ -140,15 +140,6 @@ export {
   type AppState,
 } from './store';
 
-/**
- * Theme management system with support for light, dark, and terminal themes.
- * Handles theme persistence and runtime switching.
- */
-export {
-  useThemeStore,
-  type ThemeState,
-} from './themeStore';
-
 // ============================================================================
 // PLATFORM INTEGRATION
 // ============================================================================

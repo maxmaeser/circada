@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Menu, X, Copy } from 'lucide-react'
-import { useThemeStore } from '@/lib/themeStore'
 import { Button } from './ui/button'
 
 // Test direct imports from services
@@ -25,9 +24,6 @@ export default function BurgerMenu({ onTestDataToggle }: BurgerMenuProps) {
   const [mockAnalysisLoading, setMockAnalysisLoading] = useState(false)
   const [hasMockAnalysis, setHasMockAnalysis] = useState(false)
   const [mockAnalysisCopied, setMockAnalysisCopied] = useState(false)
-  
-  const theme = useThemeStore((s) => s.theme)
-  const setTheme = useThemeStore((s) => s.setTheme)
 
   const testImports = () => {
     setTestStatus('Testing imports...')
@@ -94,20 +90,6 @@ export default function BurgerMenu({ onTestDataToggle }: BurgerMenuProps) {
       {/* Dropdown Menu */}
       {isOpen && (
         <div className="absolute top-12 right-0 w-80 bg-card/95 backdrop-blur border border-border rounded-lg shadow-xl p-4 space-y-4">
-          {/* Theme Selector */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Theme</label>
-            <select
-              value={theme}
-              onChange={(e) => setTheme(e.target.value as 'light' | 'dark' | 'terminal')}
-              className="w-full bg-background text-foreground border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="dark">🌙 Night</option>
-              <option value="light">☀️ Light</option>
-              <option value="terminal">🖥️ Terminal</option>
-            </select>
-          </div>
-
           {/* Test Data Controls */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
