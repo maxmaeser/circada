@@ -21,9 +21,14 @@
         "fullscreen": false,
         "visible": true,
         "decorations": true,
-        "transparent": false,
+        "transparent": true,
         "alwaysOnTop": false,
-        "label": "main"
+        "label": "main",
+        "windowEffects": {
+          "effects": ["underWindowBackground"],
+          "state": "active",
+          "radius": 0.25
+        }
       }
     ],
     "security": {

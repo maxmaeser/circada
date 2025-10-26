@@ -93,7 +93,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-2 sm:p-4 md:p-8">
+    <div className="min-h-screen backdrop-blur-sm bg-black/[0.006] text-foreground p-4 sm:p-6 md:p-10">
       {/* Burger Menu */}
       <BurgerMenu
         showTestData={showRealData}
