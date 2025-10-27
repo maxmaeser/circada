@@ -13,13 +13,16 @@
     "test": "jest",
     "build:release": "./scripts/build-release.sh",
     "build:dev": "./scripts/dev-build.sh",
-    "build:universal": "npm run tauri build -- --target universal-apple-darwin"
+    "build:universal": "npm run tauri build -- --target universal-apple-darwin",
+    "version:bump": "./scripts/bump-version.sh"
   },
   "dependencies": {
     "@radix-ui/react-progress": "^1.1.7",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@tauri-apps/api": "^2.0.0-beta.16",
+    "@tauri-apps/plugin-process": "^2.3.0",
+    "@tauri-apps/plugin-updater": "^2.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.516.0",

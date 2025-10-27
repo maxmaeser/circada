@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from 'react'
-import { Menu, X, Copy } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Menu, X, Copy, Download, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react'
 import { Button } from './ui/button'
+import { updateService, UpdateState } from '@/services/updateService'
 
 // Test direct imports from services
 import { HealthDataParser, RealDataCircadianEngine } from '../services/healthDataTypes'
@@ -18,12 +19,25 @@ export default function BurgerMenu({ onTestDataToggle }: BurgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [testStatus, setTestStatus] = useState('Not loaded')
   const [hasTestedData, setHasTestedData] = useState(false)
-  
+
   // Mock Analysis State
   const [mockAnalysisResult, setMockAnalysisResult] = useState<any>(null)
   const [mockAnalysisLoading, setMockAnalysisLoading] = useState(false)
   const [hasMockAnalysis, setHasMockAnalysis] = useState(false)
   const [mockAnalysisCopied, setMockAnalysisCopied] = useState(false)
+
+  // Update State
+  const [updateState, setUpdateState] = useState<UpdateState>({ status: 'idle' })
+
+  // Subscribe to update service
+  useEffect(() => {
+    const unsubscribe = updateService.subscribe(setUpdateState);
+    return unsubscribe;
+  }, []);
+
+  const checkForUpdates = async () => {
+    await updateService.checkForUpdates();
+  };
 
   const testImports = () => {
     setTestStatus('Testing imports...')
@@ -74,6 +88,42 @@ export default function BurgerMenu({ onTestDataToggle }: BurgerMenuProps) {
   const closeMenu = () => {
     setIsOpen(false)
   }
+
+  const getUpdateStatusIcon = () => {
+    switch (updateState.status) {
+      case 'checking':
+        return <RefreshCw className="w-4 h-4 animate-spin text-blue-400" />;
+      case 'downloading':
+        return <Download className="w-4 h-4 text-yellow-400" />;
+      case 'upToDate':
+        return <CheckCircle className="w-4 h-4 text-green-400" />;
+      case 'available':
+        return <Download className="w-4 h-4 text-green-400" />;
+      case 'error':
+        return <AlertCircle className="w-4 h-4 text-red-400" />;
+      default:
+        return null;
+    }
+  };
+
+  const getUpdateStatusText = () => {
+    switch (updateState.status) {
+      case 'checking':
+        return 'Checking for updates...';
+      case 'downloading':
+        return `Downloading... ${updateState.downloadProgress || 0}%`;
+      case 'ready':
+        return 'Update ready! Restarting...';
+      case 'upToDate':
+        return 'You are up to date!';
+      case 'available':
+        return `Update available: v${updateState.info?.version}`;
+      case 'error':
+        return `Error: ${updateState.error || 'Unknown error'}`;
+      default:
+        return 'Version 1.0.0';
+    }
+  };
 
   return (
     <div className="fixed top-4 right-4 z-50">
@@ -154,6 +204,40 @@ export default function BurgerMenu({ onTestDataToggle }: BurgerMenuProps) {
             {mockAnalysisCopied && (
               <p className="text-xs text-green-400">Copied to clipboard!</p>
             )}
+          </div>
+
+          {/* App Updates */}
+          <div className="space-y-3 border-t border-border pt-4">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">App Updates</label>
+              <Button
+                onClick={checkForUpdates}
+                size="sm"
+                variant="outline"
+                className="h-8 px-3 text-xs"
+                disabled={updateState.status === 'checking' || updateState.status === 'downloading'}
+              >
+                Check for Updates
+              </Button>
+            </div>
+
+            {/* Update Status */}
+            <div className="p-3 bg-background/50 rounded-md">
+              <div className="flex items-center gap-2">
+                {getUpdateStatusIcon()}
+                <p className="text-sm text-muted-foreground">
+                  {getUpdateStatusText()}
+                </p>
+              </div>
+              {updateState.status === 'downloading' && updateState.downloadProgress !== undefined && (
+                <div className="mt-2 w-full bg-background rounded-full h-2">
+                  <div
+                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${updateState.downloadProgress}%` }}
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Close button */}

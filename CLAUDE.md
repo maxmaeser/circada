@@ -37,6 +37,9 @@ npm run lint
 
 # Start preview server
 npm run preview
+
+# Bump version and create release tag
+npm run version:bump 1.0.1
 ```
 
 ## Project Architecture
@@ -226,6 +229,7 @@ Latest implementation is complete and production-ready:
 5. **✅ Native Menubar Timer**: Real-time countdown timer with phase arrows in macOS menubar
 6. **✅ macOS App Distribution**: Complete app bundle with DMG installer and entitlements
 7. **✅ Production Build System**: Automated build scripts for development and release
+8. **✅ Auto-Update System**: Automatic updates via GitHub Releases with manual check option
 
 ## macOS Widget Implementation - COMPLETED ✅
 
@@ -299,6 +303,212 @@ npm run build:release
 # Universal build for distribution
 npm run build:universal
 ```
+
+## Auto-Update System - COMPLETED ✅
+
+### Update System Status
+Automatic update system fully implemented using Tauri's updater plugin with GitHub Releases. Users automatically receive updates without manual intervention.
+
+**Completed Features:**
+- **Automatic Update Checks**: App checks for updates on startup
+- **Manual Update Check**: "Check for Updates" button in Burger Menu
+- **Auto-Download and Install**: Updates download and install automatically
+- **Progress Tracking**: Real-time download progress with percentage display
+- **Update Notifications**: Visual indicators (icons, text, progress bars) for update status
+- **GitHub Releases Integration**: Updates distributed via GitHub Releases
+- **Version Management**: Automated version bumping and git tagging
+
+**Update Behavior:**
+- Checks on app startup (silent, non-blocking, automatic)
+- Manual check available in Burger Menu → App Updates section
+- Downloads update automatically when available
+- Shows download progress with live percentage updates
+- Relaunches app automatically to apply update
+- No user interaction required (fully automated)
+
+### Key Files
+
+**Backend (Rust/Tauri)**:
+- `src-tauri/Cargo.toml:11-14` - Declares `tauri-plugin-updater` dependency
+- `src-tauri/src/lib.rs:15-20` - Initializes updater plugin
+- `src-tauri/tauri.conf.json:40` - Bundle config: `createUpdaterArtifacts: true`
+- `src-tauri/tauri.conf.json:60-70` - Plugin config: endpoints and pubkey
+
+**Frontend (TypeScript/React)**:
+- `src/services/updateService.ts` - Complete update service (171 lines)
+  - Singleton pattern with subscribe/notify
+  - State management: idle, checking, available, downloading, ready, upToDate, error
+  - Automatic download when update detected
+- `src/App.tsx:30-40` - Startup update check
+- `src/components/BurgerMenu.tsx:29-36` - Update state subscription
+- `src/components/BurgerMenu.tsx:209-241` - Update UI display
+
+**CI/CD & Scripts**:
+- `.github/workflows/release.yml` - Automated release workflow (94 lines)
+  - Builds universal macOS app
+  - Creates `latest.json` manifest
+  - Uploads to GitHub Releases
+- `scripts/bump-version.sh` - Version management script (91 lines)
+  - Updates package.json and tauri.conf.json
+  - Creates git commit and tag
+- `package.json:17` - Version bump command: `npm run version:bump`
+
+**Documentation**:
+- `AUTO_UPDATE.md` - Comprehensive technical documentation (400+ lines)
+  - Architecture diagrams
+  - Component breakdowns
+  - Configuration reference
+  - Testing procedures
+  - Troubleshooting guide
+- `RELEASE_CHECKLIST.md` - Step-by-step release guide (150+ lines)
+  - Pre-release validation
+  - Release process steps
+  - Post-release tasks
+  - Rollback procedures
+
+### Quick Start: Creating a Release
+
+**Simple 4-Step Process**:
+
+```bash
+# 1. Bump version and create tag
+npm run version:bump 1.0.1
+
+# 2. Push tag (triggers GitHub Actions)
+git push origin v1.0.1
+
+# 3. Push commit
+git push
+
+# 4. Monitor at https://github.com/maxmaeser/circada/actions
+```
+
+**What Happens Automatically**:
+1. ✅ GitHub Actions builds universal macOS app (~10-15 minutes)
+2. ✅ DMG installer created
+3. ✅ `latest.json` manifest generated
+4. ✅ GitHub Release created with assets
+5. ✅ All users automatically receive update
+
+**Verification**:
+- Check: https://github.com/maxmaeser/circada/releases
+- Verify assets: `Circada_X.Y.Z_universal.dmg` and `latest.json`
+- Test: Run older version, should detect update automatically
+
+### Update Flow Diagram
+
+```
+User Starts App
+    ↓
+App.tsx triggers updateService.checkForUpdates()
+    ↓
+Status: 'checking' → Fetches latest.json from GitHub
+    ↓
+Compare versions → If higher version available:
+    ↓
+Status: 'available' → Shows "Update available: vX.Y.Z"
+    ↓
+Auto-trigger downloadAndInstall()
+    ↓
+Status: 'downloading' → Progress: 0% → 25% → 50% → 100%
+    ↓
+Status: 'ready' → "Update ready! Restarting..."
+    ↓
+App relaunches → New version running
+```
+
+### Testing Updates
+
+**Quick Test**:
+```bash
+# Create test release
+npm run version:bump 1.0.1
+git push origin v1.0.1 && git push
+
+# Wait for GitHub Actions to complete
+
+# In Burger Menu → App Updates → Click "Check for Updates"
+# Should detect update, download, and relaunch
+```
+
+**Detailed Testing Guide**: See `AUTO_UPDATE.md` → Testing section
+
+### Common Tasks
+
+**Check current version**:
+```bash
+grep '"version"' package.json
+```
+
+**Verify latest release**:
+```bash
+curl -L https://github.com/maxmaeser/circada/releases/latest/download/latest.json | jq .version
+```
+
+**Delete a bad release**:
+```bash
+gh release delete v1.0.1
+git tag -d v1.0.1
+git push origin :refs/tags/v1.0.1
+```
+
+**Monitor GitHub Actions**:
+```bash
+gh run list
+```
+
+### Troubleshooting
+
+**Issue: "You are up to date" when update expected**
+- Verify new version is higher than current
+- Check: `curl -L https://github.com/maxmaeser/circada/releases/latest/download/latest.json`
+- Ensure GitHub Release exists with `latest.json`
+
+**Issue: GitHub Actions workflow fails**
+- Check logs: https://github.com/maxmaeser/circada/actions
+- Common: Build errors, permission issues
+- Fix locally, delete release/tag, retry
+
+**Issue: Download fails**
+- Verify DMG exists on GitHub Releases
+- Test URL: `curl -I https://github.com/.../Circada_X.Y.Z_universal.dmg`
+
+**Complete Troubleshooting Guide**: See `AUTO_UPDATE.md` → Troubleshooting section
+
+### Future Enhancements
+
+**Code Signing** (High Priority):
+- Requires Apple Developer Program ($99/year)
+- Enables Gatekeeper approval and notarization
+- See `AUTO_UPDATE.md` → Future Enhancements → Code Signing
+
+**Update Channels** (Beta/Alpha):
+- Separate update streams for testing
+- User-selectable channels in settings
+
+**Release Notes Display**:
+- Show "What's New" dialog after update
+- Format markdown release notes
+
+**Detailed Roadmap**: See `AUTO_UPDATE.md` → Future Enhancements section
+
+### Additional Resources
+
+- **Comprehensive Documentation**: `AUTO_UPDATE.md` (400+ lines)
+  - System architecture
+  - Component breakdowns
+  - Configuration reference
+  - Testing procedures
+  - Troubleshooting guide
+  - Future enhancements
+
+- **Release Guide**: `RELEASE_CHECKLIST.md` (150+ lines)
+  - Pre-release checklist
+  - Step-by-step process
+  - Verification steps
+  - Rollback procedures
+
+- **Official Docs**: https://tauri.app/v1/guides/distribution/updater/
 
 ## Future Roadmap - Advanced Features
 

@@ -10,6 +10,51 @@ A native macOS application for tracking circadian and ultradian rhythms with rea
 - **Predictive Analytics**: 6-hour energy forecasting with personalized recommendations
 - **Native macOS Widget**: Desktop widget for continuous monitoring
 - **Live Menubar Timer**: Real-time countdown in system tray
+- **Automatic Updates**: Seamless updates via GitHub Releases
+
+## 🔄 Automatic Updates
+
+Circada includes a built-in auto-update system that keeps the app current without user intervention.
+
+### How It Works
+
+- **Automatic Checks**: App checks for updates on startup (silent, non-blocking)
+- **Manual Checks**: Users can manually check via Burger Menu → App Updates
+- **Auto-Download**: Updates download automatically when available
+- **Auto-Install**: Updates install and relaunch the app automatically
+- **No Disruption**: Updates happen seamlessly in the background
+
+### User Experience
+
+When an update is available:
+1. User sees notification in Burger Menu: "Update available: vX.Y.Z"
+2. Download begins automatically with progress indicator
+3. Once downloaded, app shows: "Update ready! Restarting..."
+4. App automatically relaunches with new version
+5. User continues working with latest features
+
+### For Developers
+
+**Creating a Release**:
+```bash
+# Bump version and create tag
+npm run version:bump 1.0.1
+
+# Push tag to trigger automated release
+git push origin v1.0.1
+git push
+```
+
+GitHub Actions automatically:
+- Builds universal macOS app
+- Creates DMG installer
+- Generates update manifest
+- Publishes to GitHub Releases
+- Makes update available to all users
+
+**Documentation**:
+- See `AUTO_UPDATE.md` for technical details
+- See `RELEASE_CHECKLIST.md` for step-by-step release guide
 
 ## 📦 System Requirements
 
@@ -111,12 +156,39 @@ The widget extension is located in `widget-extension/` and builds automatically 
 ## 🎯 Distribution Channels
 
 1. **Direct Distribution**: DMG installer for direct download
+   - Distributed via GitHub Releases
+   - Automatic updates enabled
+   - No App Store review required
+   - Fastest update deployment
+
 2. **App Store**: Full App Store review and distribution
+   - Centralized distribution
+   - Managed updates via App Store
+   - Requires stricter entitlements
+   - Longer review process
+
 3. **Developer Distribution**: Enterprise or beta testing
+   - Ad-hoc or enterprise provisioning
+   - Internal testing before public release
+   - Can use automatic updates with custom endpoints
+
+### Update Distribution
+
+**Current Method**: GitHub Releases with automatic updates
+
+**How Updates Reach Users**:
+1. Developer creates release via `npm run version:bump X.Y.Z`
+2. GitHub Actions builds and publishes to GitHub Releases
+3. All installed apps automatically check for updates
+4. Users receive updates within minutes of release
+
+**Update Frequency**: As needed (no App Store delays)
 
 ## 📞 Support
 
 For build issues or distribution questions, refer to:
+- `AUTO_UPDATE.md` for auto-update system documentation
+- `RELEASE_CHECKLIST.md` for release process
 - `CLAUDE.md` for development documentation
 - `PRODUCT_ROADMAP.md` for future plans
 - Tauri documentation for build troubleshooting

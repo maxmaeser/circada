@@ -45,6 +45,7 @@
     "category": "Healthcare and Fitness",
     "shortDescription": "Circadian Rhythm Tracker",
     "longDescription": "Track your circadian and ultradian rhythms with real-time HealthKit integration, predictive analytics, and personalized insights for optimal energy management.",
+    "createUpdaterArtifacts": true,
     "macOS": {
       "minimumSystemVersion": "13.0",
       "signingIdentity": null,
@@ -68,6 +69,14 @@
           "y": 170
         }
       }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/maxmaeser/circada/releases/latest/download/latest.json"
+      ],
+      "pubkey": ""
     }
   }
 }

@@ -5,6 +5,7 @@ import { useAppStore } from "@/lib/store"
 // import { liveHealthKit, LiveCycleAdjustment } from "@/services/liveHealthKit"
 // import { trayUpdater } from "@/services/trayUpdater"
 import { widgetDataProvider } from "@/services/widgetDataProvider"
+import { updateService } from "@/services/updateService"
 import UltradianDashboard from "@/components/UltradianDashboard"
 import PredictiveAnalytics from "@/components/PredictiveAnalytics"
 import BurgerMenu from "@/components/BurgerMenu"
@@ -79,6 +80,20 @@ export default function App() {
       widgetDataProvider.stop();
     };
   }, [setCurrentTime])
+
+  // Check for updates on startup
+  useEffect(() => {
+    const checkUpdates = async () => {
+      try {
+        console.log('Checking for updates...');
+        await updateService.checkForUpdates();
+      } catch (error) {
+        console.error('Failed to check for updates:', error);
+      }
+    };
+
+    checkUpdates();
+  }, []);
 
   // const handleHealthDataLoaded = (analysis: any) => {
   //   setRealDataAnalysis(analysis);
