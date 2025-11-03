@@ -21,18 +21,18 @@ npm install
 echo "🏗️  Building frontend..."
 npm run build
 
-# Build Tauri app
-echo "🚀 Building Tauri app..."
-npm run tauri build -- --target universal-apple-darwin
+# Build Tauri app (Apple Silicon)
+echo "🚀 Building Tauri app for Apple Silicon..."
+npm run tauri build -- --target aarch64-apple-darwin
 
 # Check if build was successful
-if [ -d "src-tauri/target/universal-apple-darwin/release/bundle/macos" ]; then
+if [ -d "src-tauri/target/aarch64-apple-darwin/release/bundle/macos" ]; then
     echo "✅ Build successful!"
-    
+
     # Copy to build directory for easy access
     mkdir -p build/
-    cp -r src-tauri/target/universal-apple-darwin/release/bundle/macos/Circada.app build/
-    cp -r src-tauri/target/universal-apple-darwin/release/bundle/dmg/Circada_*.dmg build/ 2>/dev/null || echo "📝 DMG creation skipped (requires signing)"
+    cp -r src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Circada.app build/
+    cp -r src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/Circada_*.dmg build/ 2>/dev/null || echo "📝 DMG creation skipped (requires signing)"
     
     echo "📁 Built app available at: build/Circada.app"
     echo "🎉 Release build complete!"

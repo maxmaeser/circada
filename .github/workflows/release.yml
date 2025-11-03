@@ -23,7 +23,7 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin,x86_64-apple-darwin
+          targets: aarch64-apple-darwin
 
       - name: Install dependencies
         run: npm ci
@@ -31,8 +31,8 @@ jobs:
       - name: Build frontend
         run: npm run build
 
-      - name: Build universal macOS app
-        run: npm run tauri build -- --target universal-apple-darwin
+      - name: Build macOS app (Apple Silicon)
+        run: npm run tauri build -- --target aarch64-apple-darwin
         env:
           # TODO: Add code signing environment variables when ready
           # APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
@@ -51,9 +51,9 @@ jobs:
       - name: Create updater manifest
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
-          DMG_PATH="src-tauri/target/universal-apple-darwin/release/bundle/dmg/Circada_${VERSION}_universal.dmg"
+          DMG_PATH="src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/Circada_${VERSION}_aarch64.dmg"
 
-          # Create latest.json manifest for the updater
+          # Create latest.json manifest for the updater (Apple Silicon only)
           cat > latest.json <<EOF
           {
             "version": "${VERSION}",
@@ -62,11 +62,7 @@ jobs:
             "platforms": {
               "darwin-aarch64": {
                 "signature": "",
-                "url": "https://github.com/maxmaeser/circada/releases/download/v${VERSION}/Circada_${VERSION}_universal.dmg"
-              },
-              "darwin-x86_64": {
-                "signature": "",
-                "url": "https://github.com/maxmaeser/circada/releases/download/v${VERSION}/Circada_${VERSION}_universal.dmg"
+                "url": "https://github.com/maxmaeser/circada/releases/download/v${VERSION}/Circada_${VERSION}_aarch64.dmg"
               }
             }
           }
@@ -76,7 +72,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
             latest.json
           draft: false
           prerelease: false
@@ -87,7 +83,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: macos-universal
+          name: macos-apple-silicon
           path: |
-            src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
             latest.json

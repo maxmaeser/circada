@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Circada** is a production-ready macOS application for tracking circadian and ultradian rhythms, built with React, TypeScript, Tailwind CSS, and Tauri. The app provides real-time visualization of 24-hour circadian cycles and 90-minute ultradian energy cycles with precise timing and sophisticated visualizations.
 
-**PRODUCTION READY**: Complete macOS app with live HealthKit integration, real-time heart rate streaming, interactive wave visualizations, native menubar timer, and comprehensive distribution setup. Available as a universal macOS app bundle supporting both Intel and Apple Silicon architectures.
+**PRODUCTION READY**: Complete macOS app with live HealthKit integration, real-time heart rate streaming, interactive wave visualizations, native menubar timer, and comprehensive distribution setup. Available as a native Apple Silicon macOS app bundle.
 
 ## Development Commands
 
@@ -23,11 +23,8 @@ npm run build
 # Build complete macOS app (development)
 npm run build:dev
 
-# Build complete macOS app (production release)
+# Build complete macOS app (production release - Apple Silicon)
 npm run build:release
-
-# Build universal macOS app for distribution
-npm run build:universal
 
 # Run tests
 npm test
@@ -269,7 +266,7 @@ Native macOS desktop widget successfully implemented with perfect visual parity 
 Complete macOS application ready for production use and distribution:
 
 **Completed Distribution Features:**
-- **Universal macOS App**: Native app bundle supporting Intel + Apple Silicon
+- **Apple Silicon macOS App**: Native app bundle optimized for Apple Silicon (M1/M2/M3)
 - **DMG Installer**: Self-contained installer package for easy distribution
 - **Code Signing Ready**: Entitlements and configuration for Apple Developer Program
 - **App Store Preparation**: Proper bundle ID, category, and metadata configuration
@@ -277,31 +274,28 @@ Complete macOS application ready for production use and distribution:
 
 **App Information:**
 - **Bundle ID**: `com.circada.app`
-- **Version**: 1.0.0
+- **Version**: 1.0.2
 - **Category**: Healthcare and Fitness
 - **Minimum macOS**: 13.0 (Ventura)
-- **Architecture**: Universal (Intel + Apple Silicon)
-- **App Size**: ~40MB
+- **Architecture**: Apple Silicon (aarch64)
+- **App Size**: ~15MB
 - **Installation**: Available in `/Applications/Circada.app`
 
 **Distribution Files:**
-- `scripts/build-release.sh`: Production build script
-- `scripts/dev-build.sh`: Development build script  
+- `scripts/build-release.sh`: Production build script (Apple Silicon)
+- `scripts/dev-build.sh`: Development build script
 - `src-tauri/entitlements.plist`: App sandbox and HealthKit entitlements
 - `README-DISTRIBUTION.md`: Complete distribution documentation
-- `build/debug/Circada.app`: Ready-to-use application bundle
-- `build/debug/Circada_1.0.0_aarch64.dmg`: DMG installer
+- `build/Circada.app`: Ready-to-use application bundle
+- `build/Circada_1.0.2_aarch64.dmg`: DMG installer
 
 ### Build Commands
 ```bash
 # Development build
 npm run build:dev
 
-# Production release build
+# Production release build (Apple Silicon)
 npm run build:release
-
-# Universal build for distribution
-npm run build:universal
 ```
 
 ## Auto-Update System - COMPLETED ✅

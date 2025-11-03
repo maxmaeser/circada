@@ -13,7 +13,6 @@
     "test": "jest",
     "build:release": "./scripts/build-release.sh",
     "build:dev": "./scripts/dev-build.sh",
-    "build:universal": "npm run tauri build -- --target universal-apple-darwin",
     "version:bump": "./scripts/bump-version.sh"
   },
   "dependencies": {
